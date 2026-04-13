@@ -18,23 +18,50 @@ System for Early Scam Detection in Crypto-Assets.* Applied Sciences, MDPI.
 
 ```mermaid
 graph TD
-    START([Input]) --> ROUTE{Route}
+    START([Input]) --> ROUTE{Route by<br/>input type}
 
+    %% Discovery path
     ROUTE -->|project_query| SEARCHER[Searcher<br/>CoinGecko API]
-    ROUTE -->|whitepaper_text| FORK
-
     SEARCHER --> CRAWLER[Crawler<br/>crawl4ai + GitHub + PDF]
     CRAWLER --> GOPLUS[GoPlus Check<br/>On-chain Security]
-    GOPLUS --> FORK
+    GOPLUS --> FANOUT
 
-    FORK[Fork] --> EXTRACT[Extract Flags<br/>LLM Stage 1]
-    FORK --> TRUST[Trust Analysis<br/>LLM + GoPlus Modifier]
+    %% Direct whitepaper path
+    ROUTE -->|whitepaper_text| FANOUT
 
-    EXTRACT --> CLASSIFY[Classify<br/>YAML Rule Engine]
-    CLASSIFY --> VERIFY[Verify Disclosure<br/>LLM Stage 3]
+    %% Parallel fan-out
+    FANOUT{Parallel<br/>Fan-out} --> EXTRACT
+    FANOUT --> TRUST
 
-    VERIFY --> END_NODE([Report])
-    TRUST --> END_NODE
+    %% Compliance branch (sequential)
+    subgraph compliance [" Compliance Pipeline "]
+        EXTRACT[Stage 1 · Extract Flags<br/>LLM GPT-4o] --> CLASSIFY[Stage 2 · Classify<br/>YAML Rule Engine]
+        CLASSIFY --> VERIFY[Stage 3 · Verify Disclosures<br/>LLM GPT-4o]
+    end
+
+    %% Trust branch (single step)
+    subgraph trust_branch [" Trust Analysis "]
+        TRUST[Trust Scoring<br/>LLM + GoPlus Modifier]
+    end
+
+    %% Merge
+    VERIFY --> REPORT([Report])
+    TRUST --> REPORT
+
+    %% Styling
+    classDef input fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef agent fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    classDef llm fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    classDef rules fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
+    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef fork fill:#fce4ec,stroke:#c62828,color:#b71c1c
+
+    class START,ROUTE input
+    class SEARCHER,CRAWLER,GOPLUS agent
+    class EXTRACT,VERIFY,TRUST llm
+    class CLASSIFY rules
+    class REPORT output
+    class FANOUT fork
 ```
 
 Both branches run in parallel via LangGraph conditional fan-out.
