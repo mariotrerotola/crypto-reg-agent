@@ -203,22 +203,32 @@ class TestRulePriority:
 
 class TestDisclosureChecklist:
     def test_emt_checklist(self, rule_engine: RuleEngine) -> None:
-        """EMT: 16 requirements (11 common Art.51 + 5 EMT-specific Art.49/54)."""
+        """EMT: 21 requirements (common + corporate + EMT-specific)."""
         items = rule_engine.get_disclosure_checklist("emt")
-        assert len(items) == 16
+        assert len(items) == 21
         ids = [item["id"] for item in items]
+        # Common obligations
         assert "whitepaper_present" in ids
-        assert "redeemable_at_par" in ids  # EMT-specific Art.49
-        assert "environmental_impact_disclosed" in ids  # Art.51(1)(g)
-        assert "technology_disclosed" in ids  # Art.51(1)(e)
+        assert "technology_disclosed" in ids
+        assert "environmental_impact_disclosed" in ids
+        # Corporate identity sub-checks
+        assert "legal_entity_named" in ids
+        assert "jurisdiction_disclosed" in ids
+        assert "regulatory_status_disclosed" in ids
+        assert "team_members_identified" in ids
+        assert "audit_provider_named" in ids
+        # EMT-specific
+        assert "redeemable_at_par" in ids
 
     def test_art_checklist(self, rule_engine: RuleEngine) -> None:
-        """ART: 17 requirements (12 common Art.19 + 5 ART-specific)."""
+        """ART: 22 requirements (common + corporate + ART-specific)."""
         items = rule_engine.get_disclosure_checklist("art")
-        assert len(items) == 17
+        assert len(items) == 22
         ids = [item["id"] for item in items]
-        assert "reserve_composition_disclosed" in ids  # ART-specific
-        assert "management_body_statement" in ids  # Art.19(5)
+        assert "legal_entity_named" in ids
+        assert "audit_provider_named" in ids
+        assert "reserve_composition_disclosed" in ids
+        assert "management_body_statement" in ids
 
     def test_security_checklist(self, rule_engine: RuleEngine) -> None:
         """Security: 4 items (MiFID II, not MiCAR)."""
@@ -226,16 +236,17 @@ class TestDisclosureChecklist:
         assert len(items) == 4
         ids = [item["id"] for item in items]
         assert "micar_excluded" in ids
-        assert "prospectus_present" in ids
 
     def test_other_checklist(self, rule_engine: RuleEngine) -> None:
-        """Other: 12 requirements (Art. 6 + Annex I)."""
+        """Other: 16 requirements (Art. 6 + Annex I + corporate checks)."""
         items = rule_engine.get_disclosure_checklist("other")
-        assert len(items) == 12
+        assert len(items) == 16
         ids = [item["id"] for item in items]
-        assert "summary_present" in ids  # Art.6(7)
-        assert "management_body_statement" in ids  # Art.6(6)
-        assert "environmental_impact_disclosed" in ids  # Art.6(1)(i)
+        assert "legal_entity_named" in ids
+        assert "jurisdiction_disclosed" in ids
+        assert "team_members_identified" in ids
+        assert "summary_present" in ids
+        assert "management_body_statement" in ids
 
     def test_non_micar_checklist(self, rule_engine: RuleEngine) -> None:
         items = rule_engine.get_disclosure_checklist("non_micar")

@@ -10,8 +10,10 @@
 # Class-specific obligations are appended per title.
 #
 # v1.1 — Updated from EUR-Lex official text.
+# v1.2 — Added corporate identity and authorization sub-checks
+#         (granular verification of Art. 6(1)(a-b) issuer disclosure).
 
-version: "1.1"
+version: "1.2"
 jurisdiction: "EU-MiCAR"
 
 checklists:
@@ -30,6 +32,32 @@ checklists:
       description: >-
         Information about the issuer of the e-money token, including
         legal name, registered address, and contact details.
+    - id: "legal_entity_named"
+      article: "Art. 51(1)(a), Annex III Part A"
+      description: >-
+        A specific legal entity name (company, foundation, or association)
+        is provided as the issuer, not just a project name or pseudonym.
+    - id: "jurisdiction_disclosed"
+      article: "Art. 51(1)(a), Annex III Part A"
+      description: >-
+        The jurisdiction or country of incorporation/registration of
+        the issuing entity is explicitly stated.
+    - id: "regulatory_status_disclosed"
+      article: "Art. 48(1)"
+      description: >-
+        The issuer discloses its regulatory authorization status,
+        including any licenses, registrations, or authorizations
+        obtained from competent authorities.
+    - id: "team_members_identified"
+      article: "Annex III Part A"
+      description: >-
+        Key members of the management body or founding team are
+        identified by name, with their roles and relevant experience.
+    - id: "audit_provider_named"
+      article: "Art. 54, Annex III"
+      description: >-
+        An independent audit or attestation firm is identified by
+        name in relation to the reserve verification.
     - id: "project_description"
       article: "Art. 51(1)(b)"
       description: >-
@@ -126,6 +154,32 @@ checklists:
       description: >-
         Information about the issuer of the asset-referenced token,
         including legal name, address, and registration details.
+    - id: "legal_entity_named"
+      article: "Art. 19(1)(a), Annex II Part A"
+      description: >-
+        A specific legal entity name is provided as the issuer,
+        not just a project name or pseudonym.
+    - id: "jurisdiction_disclosed"
+      article: "Art. 19(1)(a), Annex II Part A"
+      description: >-
+        The jurisdiction or country of incorporation/registration of
+        the issuing entity is explicitly stated.
+    - id: "regulatory_status_disclosed"
+      article: "Art. 21(1)"
+      description: >-
+        The issuer discloses its regulatory authorization status,
+        including any authorizations obtained from competent authorities
+        under MiCAR Art. 21.
+    - id: "team_members_identified"
+      article: "Annex II Part A"
+      description: >-
+        Key members of the management body are identified by name,
+        with their roles and relevant experience.
+    - id: "audit_provider_named"
+      article: "Art. 36(9), Annex II"
+      description: >-
+        An independent audit or attestation firm is identified by
+        name in relation to reserve asset verification.
     - id: "project_description"
       article: "Art. 19(1)(b)"
       description: >-
@@ -224,6 +278,26 @@ checklists:
       description: >-
         Information about the offeror or person seeking admission to
         trading, and about the issuer if different.
+    - id: "legal_entity_named"
+      article: "Art. 6(1)(a), Annex I Part A"
+      description: >-
+        A specific legal entity name is provided as the offeror/issuer,
+        not just a project name, pseudonym, or anonymous team.
+    - id: "jurisdiction_disclosed"
+      article: "Art. 6(1)(a), Annex I Part A"
+      description: >-
+        The jurisdiction or country of incorporation/registration of
+        the offeror or issuer is explicitly stated.
+    - id: "regulatory_status_disclosed"
+      article: "Art. 6(1)(a), Annex I Part A"
+      description: >-
+        The offeror/issuer discloses its regulatory status, including
+        any relevant registrations, licenses, or authorizations.
+    - id: "team_members_identified"
+      article: "Art. 6(1)(d), Annex I Part B"
+      description: >-
+        Key team members, founders, or advisors involved in the project
+        are identified by name with their roles.
     - id: "project_description"
       article: "Art. 6(1)(d)"
       description: >-
