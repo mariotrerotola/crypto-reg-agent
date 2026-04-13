@@ -111,16 +111,8 @@ rules:
           equals: true
     result: "non_micar"
 
-  - id: "NON_MICAR_2"
-    description: "Non-MiCAR: investment promise without whitepaper"
-    conditions:
-      all:
-        - flag: "investment_promise"
-          equals: true
-      none:
-        - flag: "whitepaper_present"
-          equals: true
-    result: "non_micar"
+  # NON_MICAR_2 removed: lacking a whitepaper is non-compliance,
+  # not a scope exclusion. See Art. 2(4) for actual exclusions.
 
   # --- NON_CLASSIFIABLE (fallback) ---
   # Table A1: No crypto indicators detected

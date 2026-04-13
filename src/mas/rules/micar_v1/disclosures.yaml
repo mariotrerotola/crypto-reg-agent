@@ -1,205 +1,327 @@
-# MiCAR Disclosure Requirements — Table A3 + Table A4 of the paper
+# MiCAR Disclosure Requirements — Aligned to Regulation (EU) 2023/1114
 #
-# Table A3: "Specific requirements per MiCAR asset type"
-# Table A4: "Definitions of MiCAR compliance requirements"
+# Sources:
+#   OTHER (Title II): Article 6 + Annex I
+#   ART   (Title III): Article 19 + Annex II
+#   EMT   (Title IV): Article 51 + Annex III
+#   SECURITY: Outside MiCAR scope (MiFID II / Prospectus Regulation)
 #
-# Each requirement ID and definition is verbatim from the paper.
+# Common obligations (Articles 6, 19, 51) appear in all MiCAR checklists.
+# Class-specific obligations are appended per title.
+#
+# v1.1 — Updated from EUR-Lex official text.
 
-version: "1.0"
+version: "1.1"
 jurisdiction: "EU-MiCAR"
 
 checklists:
+  # ──────────────────────────────────────────────────
+  # EMT — E-Money Tokens (Title IV, Art. 51 + Annex III)
+  # ──────────────────────────────────────────────────
   emt:
+    # --- Common obligations (Art. 51, mirroring Art. 6) ---
     - id: "whitepaper_present"
+      article: "Art. 51(1)"
       description: >-
-        The whitepaper represents a foundational document providing a comprehensive
-        disclosure of the asset's structure, purpose, and operational details. It must
-        be officially registered with the competent regulatory authority, ensuring
-        transparency and accountability in accordance with regulatory standards.
-    - id: "risk_factors_disclosed"
-      description: >-
-        The whitepaper must include an explicit disclosure of the potential risks
-        associated with the asset, ensuring that investors are fully informed of the
-        possible financial, operational, and regulatory risks inherent in the investment.
+        A crypto-asset white paper must be drawn up and published.
+        It shall contain all information specified in Annex III.
     - id: "issuer_identified"
+      article: "Art. 51(1)(a)"
       description: >-
-        The identity of the issuer must be clearly stated, with sufficient details to
-        establish the legitimacy and accountability of the party responsible for the
-        asset. This is essential for investor protection and regulatory compliance.
+        Information about the issuer of the e-money token, including
+        legal name, registered address, and contact details.
+    - id: "project_description"
+      article: "Art. 51(1)(b)"
+      description: >-
+        Detailed description of the e-money token, including its
+        intended purpose and functioning.
+    - id: "risk_factors_disclosed"
+      article: "Art. 51(1)(f)"
+      description: >-
+        A detailed description of the risks relating to the issuer,
+        the e-money token, and the implementation of the project.
+    - id: "technology_disclosed"
+      article: "Art. 51(1)(e)"
+      description: >-
+        Information on the underlying technology used, including
+        the distributed ledger technology and protocols.
+    - id: "rights_obligations_disclosed"
+      article: "Art. 51(1)(d)"
+      description: >-
+        A detailed description of the rights and obligations attached
+        to the e-money token, including the right of redemption at
+        par value.
+    - id: "environmental_impact_disclosed"
+      article: "Art. 51(1)(g)"
+      description: >-
+        Information on the principal adverse impacts on the climate
+        and other environment-related adverse impacts of the consensus
+        mechanism used.
     - id: "disclaimers_present"
+      article: "Art. 51(3),(5)"
       description: >-
-        A legal disclaimer outlining the limitations of liability, investor
-        responsibilities, and risk factors must be present in the whitepaper or related
-        documentation. This ensures that investors are aware of the legal framework and
-        risks associated with the asset.
-    - id: "kyc_aml_controls"
+        Mandatory disclaimer that the white paper has not been approved
+        by any competent authority, plus warnings about value loss risk,
+        no investor compensation scheme, and no deposit guarantee scheme.
+    - id: "summary_present"
+      article: "Art. 51(7)"
       description: >-
-        The project must implement a robust Know Your Customer (KYC) and Anti-Money
-        Laundering (AML) process to verify the identity of participants and prevent
-        illegal activities such as money laundering and fraud. This is a critical
-        compliance measure to adhere to international financial regulations.
+        A summary, in brief and non-technical language, which shall state
+        in particular that the holder has a right of redemption at par value
+        at any time.
     - id: "marketing_consistent"
+      article: "Art. 53"
       description: >-
-        All marketing and promotional activities must be consistent with the information
-        disclosed in the whitepaper, ensuring that the asset is marketed truthfully and
-        transparently to potential investors. Misleading claims or discrepancies in
-        marketing communications can lead to regulatory sanctions.
-    - id: "redeemable_in_fiat"
+        All marketing communications shall be fair, clear and not misleading,
+        and consistent with the information in the white paper.
+    - id: "kyc_aml_controls"
+      article: "Directive 2015/849 (AMLD)"
       description: >-
-        The asset must be convertible into fiat currency, ensuring liquidity and
-        marketability. This requirement establishes the asset's potential for real-world
-        value realization and its compliance with financial market regulations.
-    - id: "daily_redeemability"
+        The issuer must implement KYC and AML processes as required
+        by applicable anti-money laundering legislation.
+    # --- EMT-specific obligations ---
+    - id: "redeemable_at_par"
+      article: "Art. 49(1)"
       description: >-
-        The asset should allow daily redemption, providing liquidity to users and
-        facilitating real-time market transactions. This enhances the asset's usability
-        and ensures compliance with liquidity requirements.
-    - id: "reserve_assets_held"
-      description: >-
-        The project must hold reserve assets that substantiate the value of the issued
-        tokens. These reserves act as a financial safeguard, ensuring the asset is backed
-        by tangible financial resources and mitigating the risk of a 'rug pull' or
-        insolvency.
-    - id: "reserves_audited"
-      description: >-
-        The reserve assets held by the issuer must be subject to regular, independent
-        audits to verify the validity of claims regarding asset backing. This ensures
-        financial transparency and protects investors from fraudulent activities.
-    - id: "safeguarding_mechanism"
-      description: >-
-        The project must have mechanisms in place to safeguard the assets of
-        participants, including protections against fraud, hacking, or misappropriation
-        of funds. This is a key element in protecting investor interests and ensuring
-        the project's financial stability.
+        Holders of e-money tokens shall be provided with a claim on the
+        issuer: the right to redeem at any time and at par value against
+        the reference official currency.
     - id: "redemption_policy_clear"
+      article: "Art. 49(2)-(7)"
       description: >-
-        The asset's redemption policy must be clearly articulated, outlining the specific
-        procedures and conditions under which the asset can be exchanged for fiat or
-        other assets. This ensures that investors have a clear understanding of the
-        redemption process, thus minimizing potential disputes.
+        The conditions of redemption, including any fees, must be clearly
+        and prominently stated in the white paper and on the issuer's website.
+    - id: "reserve_assets_held"
+      article: "Art. 54(1)"
+      description: >-
+        Issuers of e-money tokens shall safeguard the funds received in
+        exchange for e-money tokens, in accordance with Article 7 of
+        Directive 2009/110/EC.
+    - id: "reserves_audited"
+      article: "Art. 54, recital 66"
+      description: >-
+        The reserves shall be subject to an independent audit at least
+        every six months to verify the reserves adequately back the
+        tokens in circulation.
+    - id: "safeguarding_mechanism"
+      article: "Art. 54(2)"
+      description: >-
+        Funds received in exchange for e-money tokens shall be invested
+        in secure, low-risk assets or placed in segregated accounts at
+        credit institutions.
 
+  # ──────────────────────────────────────────────────
+  # ART — Asset-Referenced Tokens (Title III, Art. 19 + Annex II)
+  # ──────────────────────────────────────────────────
   art:
+    # --- Common obligations (Art. 19) ---
     - id: "whitepaper_present"
+      article: "Art. 19(1)"
       description: >-
-        The whitepaper represents a foundational document providing a comprehensive
-        disclosure of the asset's structure, purpose, and operational details.
-    - id: "risk_factors_disclosed"
-      description: >-
-        The whitepaper must include an explicit disclosure of the potential risks
-        associated with the asset.
+        A crypto-asset white paper must be drawn up, notified to the
+        competent authority, and published. It shall contain all
+        information specified in Annex II.
     - id: "issuer_identified"
+      article: "Art. 19(1)(a)"
       description: >-
-        The identity of the issuer must be clearly stated, with sufficient details to
-        establish legitimacy and accountability.
+        Information about the issuer of the asset-referenced token,
+        including legal name, address, and registration details.
+    - id: "project_description"
+      article: "Art. 19(1)(b)"
+      description: >-
+        Detailed description of the asset-referenced token and
+        the project, including how the value stabilisation is achieved.
+    - id: "risk_factors_disclosed"
+      article: "Art. 19(1)(f)"
+      description: >-
+        A detailed description of the risks relating to the issuer,
+        the asset-referenced token, and the implementation of the project.
+    - id: "technology_disclosed"
+      article: "Art. 19(1)(e)"
+      description: >-
+        Information on the underlying technology, including the DLT
+        and protocols used.
+    - id: "rights_obligations_disclosed"
+      article: "Art. 19(1)(d)"
+      description: >-
+        A detailed description of the rights and obligations attached
+        to the asset-referenced token, including any right to redemption
+        or claim on the reserve.
+    - id: "environmental_impact_disclosed"
+      article: "Art. 19(1)(h)"
+      description: >-
+        Information on the principal adverse impacts on the climate and
+        other environment-related adverse impacts of the consensus mechanism.
     - id: "disclaimers_present"
+      article: "Art. 19(4)"
       description: >-
-        A legal disclaimer outlining limitations of liability, investor responsibilities,
-        and risk factors must be present.
-    - id: "kyc_aml_controls"
+        The white paper must contain a clear warning that the token
+        may lose its value, may not always be transferable, may not be
+        liquid, and is not covered by investor compensation or deposit
+        guarantee schemes.
+    - id: "summary_present"
+      article: "Art. 19(6)"
       description: >-
-        The project must implement robust KYC and AML processes.
+        A summary in brief and non-technical language, providing key
+        information about the offer to the public or admission to trading.
+    - id: "management_body_statement"
+      article: "Art. 19(5)"
+      description: >-
+        A statement by the management body that the white paper complies
+        with the regulation and that the information is fair, clear and
+        not misleading.
     - id: "marketing_consistent"
+      article: "Art. 29"
       description: >-
-        All marketing activities must be consistent with whitepaper disclosures.
-    - id: "asset_backing_disclosed"
+        All marketing communications shall be consistent with the white
+        paper and shall be fair, clear and not misleading.
+    - id: "kyc_aml_controls"
+      article: "Directive 2015/849 (AMLD)"
       description: >-
-        The underlying assets or collateral backing the issued token must be disclosed,
-        offering investors transparency regarding the asset's value and financial
-        stability. This disclosure is critical to understanding the asset's intrinsic
-        value.
+        The issuer must comply with applicable AML/KYC obligations.
+    # --- ART-specific obligations (Annex II, Art. 36) ---
+    - id: "reserve_composition_disclosed"
+      article: "Art. 36(1), Annex II"
+      description: >-
+        The composition of the reserve of assets backing the token,
+        including the types and proportions of assets, must be disclosed
+        in the white paper.
+    - id: "reserve_custody_disclosed"
+      article: "Art. 37"
+      description: >-
+        Information about the custody arrangements for the reserve assets,
+        including the identity of custodians and segregation of assets.
     - id: "valuation_method_disclosed"
+      article: "Annex II Part E"
       description: >-
-        The method of valuing the asset must be disclosed, including any models,
-        algorithms, or financial metrics used to determine its worth. This ensures that
-        investors can assess the asset's value with confidence and in accordance with
-        industry standards.
-    - id: "reserve_policy_clear"
-      description: >-
-        A clear and comprehensive reserve policy must be in place, detailing how reserves
-        are managed, accessed, and used to support the asset's value. This ensures that
-        reserves are properly allocated and utilized, preventing mismanagement.
+        The method used to value the reserve assets, including frequency
+        of valuation and any models or algorithms used.
     - id: "redemption_mechanism_disclosed"
+      article: "Art. 39"
       description: >-
-        The mechanism by which investors can redeem their assets must be disclosed,
-        ensuring that there are clear and efficient procedures for converting the asset
-        into fiat or other tokens. This ensures that the redemption process aligns with
-        investor expectations and legal requirements.
+        The mechanism and conditions for redeeming the asset-referenced
+        token against the reserve assets, including applicable fees
+        and timelines.
     - id: "governance_arrangements_disclosed"
+      article: "Art. 34"
       description: >-
-        The governance structure of the project must be disclosed, providing details about
-        how decisions are made, how power is distributed, and the roles of key
-        stakeholders. This transparency helps establish accountability and ensures that
-        the project operates in the best interest of its investors.
+        The governance arrangements of the issuer, including the
+        management structure, decision-making processes, and internal
+        control mechanisms.
 
-  security:
-    - id: "whitepaper_present"
-      description: >-
-        The whitepaper represents a foundational document providing a comprehensive
-        disclosure of the asset's structure, purpose, and operational details.
-    - id: "risk_factors_disclosed"
-      description: >-
-        The whitepaper must include an explicit disclosure of potential risks.
-    - id: "issuer_identified"
-      description: >-
-        The identity of the issuer must be clearly stated.
-    - id: "disclaimers_present"
-      description: >-
-        A legal disclaimer must be present in the documentation.
-    - id: "kyc_aml_controls"
-      description: >-
-        The project must implement robust KYC and AML processes.
-    - id: "marketing_consistent"
-      description: >-
-        All marketing activities must be consistent with whitepaper disclosures.
-    - id: "prospectus_present"
-      description: >-
-        A formal prospectus must be provided, containing detailed financial information
-        about the asset, its risks, and its market potential. This document serves as an
-        essential disclosure for investors, providing them with all the necessary
-        information to make informed decisions.
-    - id: "registered_with_authority"
-      description: >-
-        The asset must be officially registered with the relevant regulatory authority,
-        ensuring that it meets the required legal and financial standards. This provides
-        investors with assurance that the asset is legitimate and subject to regulatory
-        oversight.
-    - id: "investor_protection_mechanisms"
-      description: >-
-        The project must implement mechanisms designed to protect investors, including
-        safeguards against fraud, risk mitigation measures, and avenues for dispute
-        resolution. These mechanisms are essential for fostering investor confidence and
-        maintaining market integrity.
-
+  # ──────────────────────────────────────────────────
+  # OTHER — Crypto-assets other than ART/EMT (Title II, Art. 6 + Annex I)
+  # ──────────────────────────────────────────────────
   other:
     - id: "whitepaper_present"
+      article: "Art. 6(1)"
       description: >-
-        The whitepaper represents a foundational document providing a comprehensive
-        disclosure of the asset's structure, purpose, and operational details.
-    - id: "risk_factors_disclosed"
-      description: >-
-        The whitepaper must include an explicit disclosure of potential risks.
+        A crypto-asset white paper must be drawn up and notified to the
+        competent authority. It shall contain the information specified
+        in Annex I.
     - id: "issuer_identified"
+      article: "Art. 6(1)(a)-(b)"
       description: >-
-        The identity of the issuer must be clearly stated.
-    - id: "disclaimers_present"
+        Information about the offeror or person seeking admission to
+        trading, and about the issuer if different.
+    - id: "project_description"
+      article: "Art. 6(1)(d)"
       description: >-
-        A legal disclaimer must be present in the documentation.
-    - id: "kyc_aml_controls"
-      description: >-
-        The project must implement robust KYC and AML processes.
-    - id: "marketing_consistent"
-      description: >-
-        All marketing activities must be consistent with whitepaper disclosures.
-
-  non_micar:
-    - id: "whitepaper_present"
-      description: >-
-        Basic documentation should be available for transparency.
+        Information about the crypto-asset project, including planned
+        use of funds raised, milestones, and relevant persons.
     - id: "risk_factors_disclosed"
+      article: "Art. 6(1)(h)"
       description: >-
-        Risks should be disclosed even for non-MiCAR assets.
+        A description of the risks relating to the offeror, the issuer,
+        and the crypto-asset, including risks of total loss.
+    - id: "technology_disclosed"
+      article: "Art. 6(1)(g)"
+      description: >-
+        Information on the underlying technology, including the DLT
+        used, protocols, and technical standards.
+    - id: "rights_obligations_disclosed"
+      article: "Art. 6(1)(f)"
+      description: >-
+        A detailed description of the rights and obligations attached
+        to the crypto-asset, including limitations and restrictions.
+    - id: "environmental_impact_disclosed"
+      article: "Art. 6(1)(i)"
+      description: >-
+        Information on the principal adverse impacts on the climate and
+        other environment-related adverse impacts of the consensus mechanism.
+    - id: "disclaimers_present"
+      article: "Art. 6(3),(5)"
+      description: >-
+        Mandatory disclaimer that the white paper has not been approved
+        by any competent authority, plus warning that the crypto-asset may
+        lose its value in full, may not always be transferable, and may
+        not be liquid.
+    - id: "summary_present"
+      article: "Art. 6(7)"
+      description: >-
+        A summary in brief and non-technical language, providing key
+        information about the offer.
+    - id: "management_body_statement"
+      article: "Art. 6(6)"
+      description: >-
+        A statement by the management body that the white paper complies
+        with the regulation and that information is complete and not
+        misleading.
+    - id: "marketing_consistent"
+      article: "Art. 7"
+      description: >-
+        Marketing communications shall be identifiable, fair, clear and
+        not misleading, and consistent with the white paper.
+    - id: "kyc_aml_controls"
+      article: "Directive 2015/849 (AMLD)"
+      description: >-
+        The offeror/issuer must comply with applicable AML/KYC obligations.
 
-  non_classifiable:
-    - id: "whitepaper_present"
+  # ──────────────────────────────────────────────────
+  # SECURITY — Outside MiCAR scope (Art. 2(4), subject to MiFID II)
+  # These are NOT MiCAR requirements but MiFID II / Prospectus Regulation.
+  # Included for completeness since our classifier flags securities.
+  # ──────────────────────────────────────────────────
+  security:
+    - id: "micar_excluded"
+      article: "Art. 2(4)"
       description: >-
-        Basic documentation should be available for transparency.
+        This crypto-asset qualifies as a financial instrument under
+        MiFID II and is therefore EXCLUDED from MiCAR scope. The
+        following checks are under the Prospectus Regulation.
+    - id: "prospectus_present"
+      article: "Prospectus Reg. (EU) 2017/1129"
+      description: >-
+        A prospectus compliant with the EU Prospectus Regulation must be
+        published for public offerings of securities.
+    - id: "registered_with_authority"
+      article: "MiFID II Art. 5"
+      description: >-
+        The issuer must be authorised and registered with the relevant
+        competent authority (e.g., national securities regulator).
+    - id: "investor_protection_mechanisms"
+      article: "MiFID II Art. 24-25"
+      description: >-
+        Investor protection mechanisms including suitability assessment,
+        best execution, and disclosure obligations.
+
+  # ──────────────────────────────────────────────────
+  # NON_MICAR — Outside MiCAR scope (NFTs, excluded assets)
+  # Minimal checks for informational purposes only.
+  # ──────────────────────────────────────────────────
+  non_micar:
+    - id: "documentation_present"
+      article: "N/A (informational)"
+      description: >-
+        Basic project documentation should be available even for
+        non-MiCAR assets, for transparency purposes.
+
+  # ──────────────────────────────────────────────────
+  # NON_CLASSIFIABLE — No crypto indicators detected
+  # ──────────────────────────────────────────────────
+  non_classifiable:
+    - id: "documentation_present"
+      article: "N/A (informational)"
+      description: >-
+        No classifiable crypto-asset indicators were detected.
+        Basic documentation check only.

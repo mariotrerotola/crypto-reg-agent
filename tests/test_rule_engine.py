@@ -131,7 +131,7 @@ class TestOtherClassification:
 
 
 class TestNonMicarClassification:
-    """Tests for rules NON_MICAR_1 and NON_MICAR_2."""
+    """Tests for rule NON_MICAR_1 (NFT exclusion)."""
 
     def test_nft_unique(self, rule_engine: RuleEngine) -> None:
         flags = make_flags(nft_unique=True)
@@ -139,14 +139,14 @@ class TestNonMicarClassification:
         assert result.micar_class == MiCARClass.NON_MICAR
         assert "NON_MICAR_1" in result.triggered_rules
 
-    def test_investment_promise_without_whitepaper(self, rule_engine: RuleEngine) -> None:
+    def test_investment_promise_without_whitepaper_not_excluded(
+        self, rule_engine: RuleEngine
+    ) -> None:
+        """Lacking a whitepaper is non-compliance, not scope exclusion."""
         flags = make_flags(investment_promise=True, whitepaper_present=False)
         result = rule_engine.classify(flags)
-        # SEC_1 matches first because investment_promise=True requires `any` of security flags
-        # But none of the security 'any' flags are true, so SEC_1 won't match
-        # and NON_MICAR_2 should match
-        assert result.micar_class == MiCARClass.NON_MICAR
-        assert "NON_MICAR_2" in result.triggered_rules
+        # Should NOT be NON_MICAR — missing whitepaper ≠ outside scope
+        assert result.micar_class == MiCARClass.NON_CLASSIFIABLE
 
 
 # --- NON_CLASSIFIABLE fallback ---
@@ -203,31 +203,43 @@ class TestRulePriority:
 
 class TestDisclosureChecklist:
     def test_emt_checklist(self, rule_engine: RuleEngine) -> None:
+        """EMT: 16 requirements (11 common Art.51 + 5 EMT-specific Art.49/54)."""
         items = rule_engine.get_disclosure_checklist("emt")
-        assert len(items) == 12
+        assert len(items) == 16
         ids = [item["id"] for item in items]
         assert "whitepaper_present" in ids
-        assert "redeemable_in_fiat" in ids
+        assert "redeemable_at_par" in ids  # EMT-specific Art.49
+        assert "environmental_impact_disclosed" in ids  # Art.51(1)(g)
+        assert "technology_disclosed" in ids  # Art.51(1)(e)
 
     def test_art_checklist(self, rule_engine: RuleEngine) -> None:
+        """ART: 17 requirements (12 common Art.19 + 5 ART-specific)."""
         items = rule_engine.get_disclosure_checklist("art")
-        assert len(items) == 11
+        assert len(items) == 17
         ids = [item["id"] for item in items]
-        assert "asset_backing_disclosed" in ids
+        assert "reserve_composition_disclosed" in ids  # ART-specific
+        assert "management_body_statement" in ids  # Art.19(5)
 
     def test_security_checklist(self, rule_engine: RuleEngine) -> None:
+        """Security: 4 items (MiFID II, not MiCAR)."""
         items = rule_engine.get_disclosure_checklist("security")
-        assert len(items) == 9
+        assert len(items) == 4
         ids = [item["id"] for item in items]
+        assert "micar_excluded" in ids
         assert "prospectus_present" in ids
 
     def test_other_checklist(self, rule_engine: RuleEngine) -> None:
+        """Other: 12 requirements (Art. 6 + Annex I)."""
         items = rule_engine.get_disclosure_checklist("other")
-        assert len(items) == 6
+        assert len(items) == 12
+        ids = [item["id"] for item in items]
+        assert "summary_present" in ids  # Art.6(7)
+        assert "management_body_statement" in ids  # Art.6(6)
+        assert "environmental_impact_disclosed" in ids  # Art.6(1)(i)
 
     def test_non_micar_checklist(self, rule_engine: RuleEngine) -> None:
         items = rule_engine.get_disclosure_checklist("non_micar")
-        assert len(items) == 2
+        assert len(items) == 1
 
     def test_non_classifiable_checklist(self, rule_engine: RuleEngine) -> None:
         items = rule_engine.get_disclosure_checklist("non_classifiable")
