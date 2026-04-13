@@ -1,0 +1,47 @@
+{
+  "micar_class": "other",
+  "disclosures": [
+    {
+      "requirement_id": "whitepaper_present",
+      "description": "The whitepaper represents a foundational document providing a comprehensive disclosure of the asset's structure, purpose, and operational details.",
+      "fulfilled": true,
+      "evidence": "Uniswap is a decentralized trading protocol that facilitates automated trading of decentralized finance (DeFi) tokens through an Automated Market Maker (AMM) mechanism.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "risk_factors_disclosed",
+      "description": "The whitepaper must include an explicit disclosure of potential risks.",
+      "fulfilled": true,
+      "evidence": "Participation in DeFi protocols carries risks including smart contract risk, impermanent loss, and regulatory uncertainty.",
+      "confidence": 0.95
+    },
+    {
+      "requirement_id": "issuer_identified",
+      "description": "The identity of the issuer must be clearly stated.",
+      "fulfilled": true,
+      "evidence": "Uniswap Labs is the primary development team behind the Uniswap protocol.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "disclaimers_present",
+      "description": "A legal disclaimer must be present in the documentation.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.1
+    },
+    {
+      "requirement_id": "kyc_aml_controls",
+      "description": "The project must implement robust KYC and AML processes.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.1
+    },
+    {
+      "requirement_id": "marketing_consistent",
+      "description": "All marketing activities must be consistent with whitepaper disclosures.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.1
+    }
+  ]
+}

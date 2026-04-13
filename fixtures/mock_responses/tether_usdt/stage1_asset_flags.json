@@ -1,0 +1,97 @@
+{
+  "regulated_as_security": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "represents_equity": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "represents_debt": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "has_capital_rights": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "investment_promise": {
+    "value": false,
+    "evidence": "The token functions primarily as a medium of exchange and store of value in the cryptocurrency ecosystem.",
+    "confidence": 0.9
+  },
+  "dividend_like": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "security_language": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "rights_transferable": {
+    "value": true,
+    "evidence": "Token holders can redeem USDT for fiat currency through the Tether platform.",
+    "confidence": 0.9
+  },
+  "redeemable_in_fiat": {
+    "value": true,
+    "evidence": "Each USDT token is redeemable for one US dollar from Tether's reserves.",
+    "confidence": 1.0
+  },
+  "daily_redeemability": {
+    "value": true,
+    "evidence": "The redemption process is available on a daily basis.",
+    "confidence": 1.0
+  },
+  "reserve_assets_held": {
+    "value": true,
+    "evidence": "Tether Limited maintains reserves that back every USDT token in circulation.",
+    "confidence": 1.0
+  },
+  "audited_reserves": {
+    "value": true,
+    "evidence": "The reserves are subject to periodic attestation reports by independent auditing firms.",
+    "confidence": 1.0
+  },
+  "redemption_policy_clear": {
+    "value": true,
+    "evidence": "The redemption policy is clearly outlined in the terms of service.",
+    "confidence": 1.0
+  },
+  "backed_by_assets": {
+    "value": true,
+    "evidence": "Tether is a blockchain-based cryptocurrency whose digital coins in circulation are backed by an equivalent amount of traditional fiat currencies.",
+    "confidence": 1.0
+  },
+  "utility_function": {
+    "value": false,
+    "evidence": "The token functions primarily as a medium of exchange and store of value in the cryptocurrency ecosystem.",
+    "confidence": 0.9
+  },
+  "governance_function": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "nft_unique": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "whitepaper_present": {
+    "value": true,
+    "evidence": "Marketing materials are consistent with the whitepaper disclosures.",
+    "confidence": 0.9
+  },
+  "disclaimers_regulatory": {
+    "value": true,
+    "evidence": "Tether implements KYC and AML procedures for all users. The company is registered and operates in compliance with applicable regulations.",
+    "confidence": 1.0
+  }
+}

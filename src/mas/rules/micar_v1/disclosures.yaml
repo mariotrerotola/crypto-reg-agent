@@ -1,0 +1,205 @@
+# MiCAR Disclosure Requirements — Table A3 + Table A4 of the paper
+#
+# Table A3: "Specific requirements per MiCAR asset type"
+# Table A4: "Definitions of MiCAR compliance requirements"
+#
+# Each requirement ID and definition is verbatim from the paper.
+
+version: "1.0"
+jurisdiction: "EU-MiCAR"
+
+checklists:
+  emt:
+    - id: "whitepaper_present"
+      description: >-
+        The whitepaper represents a foundational document providing a comprehensive
+        disclosure of the asset's structure, purpose, and operational details. It must
+        be officially registered with the competent regulatory authority, ensuring
+        transparency and accountability in accordance with regulatory standards.
+    - id: "risk_factors_disclosed"
+      description: >-
+        The whitepaper must include an explicit disclosure of the potential risks
+        associated with the asset, ensuring that investors are fully informed of the
+        possible financial, operational, and regulatory risks inherent in the investment.
+    - id: "issuer_identified"
+      description: >-
+        The identity of the issuer must be clearly stated, with sufficient details to
+        establish the legitimacy and accountability of the party responsible for the
+        asset. This is essential for investor protection and regulatory compliance.
+    - id: "disclaimers_present"
+      description: >-
+        A legal disclaimer outlining the limitations of liability, investor
+        responsibilities, and risk factors must be present in the whitepaper or related
+        documentation. This ensures that investors are aware of the legal framework and
+        risks associated with the asset.
+    - id: "kyc_aml_controls"
+      description: >-
+        The project must implement a robust Know Your Customer (KYC) and Anti-Money
+        Laundering (AML) process to verify the identity of participants and prevent
+        illegal activities such as money laundering and fraud. This is a critical
+        compliance measure to adhere to international financial regulations.
+    - id: "marketing_consistent"
+      description: >-
+        All marketing and promotional activities must be consistent with the information
+        disclosed in the whitepaper, ensuring that the asset is marketed truthfully and
+        transparently to potential investors. Misleading claims or discrepancies in
+        marketing communications can lead to regulatory sanctions.
+    - id: "redeemable_in_fiat"
+      description: >-
+        The asset must be convertible into fiat currency, ensuring liquidity and
+        marketability. This requirement establishes the asset's potential for real-world
+        value realization and its compliance with financial market regulations.
+    - id: "daily_redeemability"
+      description: >-
+        The asset should allow daily redemption, providing liquidity to users and
+        facilitating real-time market transactions. This enhances the asset's usability
+        and ensures compliance with liquidity requirements.
+    - id: "reserve_assets_held"
+      description: >-
+        The project must hold reserve assets that substantiate the value of the issued
+        tokens. These reserves act as a financial safeguard, ensuring the asset is backed
+        by tangible financial resources and mitigating the risk of a 'rug pull' or
+        insolvency.
+    - id: "reserves_audited"
+      description: >-
+        The reserve assets held by the issuer must be subject to regular, independent
+        audits to verify the validity of claims regarding asset backing. This ensures
+        financial transparency and protects investors from fraudulent activities.
+    - id: "safeguarding_mechanism"
+      description: >-
+        The project must have mechanisms in place to safeguard the assets of
+        participants, including protections against fraud, hacking, or misappropriation
+        of funds. This is a key element in protecting investor interests and ensuring
+        the project's financial stability.
+    - id: "redemption_policy_clear"
+      description: >-
+        The asset's redemption policy must be clearly articulated, outlining the specific
+        procedures and conditions under which the asset can be exchanged for fiat or
+        other assets. This ensures that investors have a clear understanding of the
+        redemption process, thus minimizing potential disputes.
+
+  art:
+    - id: "whitepaper_present"
+      description: >-
+        The whitepaper represents a foundational document providing a comprehensive
+        disclosure of the asset's structure, purpose, and operational details.
+    - id: "risk_factors_disclosed"
+      description: >-
+        The whitepaper must include an explicit disclosure of the potential risks
+        associated with the asset.
+    - id: "issuer_identified"
+      description: >-
+        The identity of the issuer must be clearly stated, with sufficient details to
+        establish legitimacy and accountability.
+    - id: "disclaimers_present"
+      description: >-
+        A legal disclaimer outlining limitations of liability, investor responsibilities,
+        and risk factors must be present.
+    - id: "kyc_aml_controls"
+      description: >-
+        The project must implement robust KYC and AML processes.
+    - id: "marketing_consistent"
+      description: >-
+        All marketing activities must be consistent with whitepaper disclosures.
+    - id: "asset_backing_disclosed"
+      description: >-
+        The underlying assets or collateral backing the issued token must be disclosed,
+        offering investors transparency regarding the asset's value and financial
+        stability. This disclosure is critical to understanding the asset's intrinsic
+        value.
+    - id: "valuation_method_disclosed"
+      description: >-
+        The method of valuing the asset must be disclosed, including any models,
+        algorithms, or financial metrics used to determine its worth. This ensures that
+        investors can assess the asset's value with confidence and in accordance with
+        industry standards.
+    - id: "reserve_policy_clear"
+      description: >-
+        A clear and comprehensive reserve policy must be in place, detailing how reserves
+        are managed, accessed, and used to support the asset's value. This ensures that
+        reserves are properly allocated and utilized, preventing mismanagement.
+    - id: "redemption_mechanism_disclosed"
+      description: >-
+        The mechanism by which investors can redeem their assets must be disclosed,
+        ensuring that there are clear and efficient procedures for converting the asset
+        into fiat or other tokens. This ensures that the redemption process aligns with
+        investor expectations and legal requirements.
+    - id: "governance_arrangements_disclosed"
+      description: >-
+        The governance structure of the project must be disclosed, providing details about
+        how decisions are made, how power is distributed, and the roles of key
+        stakeholders. This transparency helps establish accountability and ensures that
+        the project operates in the best interest of its investors.
+
+  security:
+    - id: "whitepaper_present"
+      description: >-
+        The whitepaper represents a foundational document providing a comprehensive
+        disclosure of the asset's structure, purpose, and operational details.
+    - id: "risk_factors_disclosed"
+      description: >-
+        The whitepaper must include an explicit disclosure of potential risks.
+    - id: "issuer_identified"
+      description: >-
+        The identity of the issuer must be clearly stated.
+    - id: "disclaimers_present"
+      description: >-
+        A legal disclaimer must be present in the documentation.
+    - id: "kyc_aml_controls"
+      description: >-
+        The project must implement robust KYC and AML processes.
+    - id: "marketing_consistent"
+      description: >-
+        All marketing activities must be consistent with whitepaper disclosures.
+    - id: "prospectus_present"
+      description: >-
+        A formal prospectus must be provided, containing detailed financial information
+        about the asset, its risks, and its market potential. This document serves as an
+        essential disclosure for investors, providing them with all the necessary
+        information to make informed decisions.
+    - id: "registered_with_authority"
+      description: >-
+        The asset must be officially registered with the relevant regulatory authority,
+        ensuring that it meets the required legal and financial standards. This provides
+        investors with assurance that the asset is legitimate and subject to regulatory
+        oversight.
+    - id: "investor_protection_mechanisms"
+      description: >-
+        The project must implement mechanisms designed to protect investors, including
+        safeguards against fraud, risk mitigation measures, and avenues for dispute
+        resolution. These mechanisms are essential for fostering investor confidence and
+        maintaining market integrity.
+
+  other:
+    - id: "whitepaper_present"
+      description: >-
+        The whitepaper represents a foundational document providing a comprehensive
+        disclosure of the asset's structure, purpose, and operational details.
+    - id: "risk_factors_disclosed"
+      description: >-
+        The whitepaper must include an explicit disclosure of potential risks.
+    - id: "issuer_identified"
+      description: >-
+        The identity of the issuer must be clearly stated.
+    - id: "disclaimers_present"
+      description: >-
+        A legal disclaimer must be present in the documentation.
+    - id: "kyc_aml_controls"
+      description: >-
+        The project must implement robust KYC and AML processes.
+    - id: "marketing_consistent"
+      description: >-
+        All marketing activities must be consistent with whitepaper disclosures.
+
+  non_micar:
+    - id: "whitepaper_present"
+      description: >-
+        Basic documentation should be available for transparency.
+    - id: "risk_factors_disclosed"
+      description: >-
+        Risks should be disclosed even for non-MiCAR assets.
+
+  non_classifiable:
+    - id: "whitepaper_present"
+      description: >-
+        Basic documentation should be available for transparency.

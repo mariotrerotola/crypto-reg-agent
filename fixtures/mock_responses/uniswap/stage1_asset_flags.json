@@ -1,0 +1,97 @@
+{
+  "regulated_as_security": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "represents_equity": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "represents_debt": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "has_capital_rights": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "investment_promise": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "dividend_like": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "security_language": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "rights_transferable": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "redeemable_in_fiat": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "daily_redeemability": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "reserve_assets_held": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "audited_reserves": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "redemption_policy_clear": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "backed_by_assets": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "utility_function": {
+    "value": true,
+    "evidence": "\"The UNI token provides access to governance features of the Uniswap protocol.\"",
+    "confidence": 1.0
+  },
+  "governance_function": {
+    "value": true,
+    "evidence": "\"UNI holders can participate in protocol governance by voting on proposals that affect the protocol's development and parameters.\"",
+    "confidence": 1.0
+  },
+  "nft_unique": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "whitepaper_present": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  },
+  "disclaimers_regulatory": {
+    "value": false,
+    "evidence": "No supporting evidence found",
+    "confidence": 0.8
+  }
+}

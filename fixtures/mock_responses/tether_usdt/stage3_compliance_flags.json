@@ -1,0 +1,82 @@
+{
+  "micar_class": "art",
+  "disclosures": [
+    {
+      "requirement_id": "ART_D1",
+      "description": "The whitepaper represents a foundational document providing a comprehensive disclosure of the asset's structure, purpose, and operational details.",
+      "fulfilled": true,
+      "evidence": "Tether is a blockchain-based cryptocurrency whose digital coins in circulation are backed by an equivalent amount of traditional fiat currencies, specifically US dollars, held in a designated bank account.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D2",
+      "description": "The whitepaper must include an explicit disclosure of the potential risks associated with the asset.",
+      "fulfilled": true,
+      "evidence": "Investing in USDT carries risks including counterparty risk, regulatory risk, and technology risk.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D3",
+      "description": "The identity of the issuer must be clearly stated, with sufficient details to establish legitimacy and accountability.",
+      "fulfilled": true,
+      "evidence": "Tether Limited is a company incorporated in the British Virgin Islands.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D4",
+      "description": "A legal disclaimer outlining limitations of liability, investor responsibilities, and risk factors must be present.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.7
+    },
+    {
+      "requirement_id": "ART_D5",
+      "description": "The project must implement robust KYC and AML processes.",
+      "fulfilled": true,
+      "evidence": "Tether implements KYC and AML procedures for all users.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D6",
+      "description": "All marketing activities must be consistent with whitepaper disclosures.",
+      "fulfilled": true,
+      "evidence": "Marketing materials are consistent with the whitepaper disclosures.",
+      "confidence": 0.8
+    },
+    {
+      "requirement_id": "ART_D7",
+      "description": "The underlying assets or collateral backing the issued token must be disclosed, offering investors transparency regarding the asset's value and financial stability.",
+      "fulfilled": true,
+      "evidence": "Tether Limited maintains reserves that back every USDT token in circulation. These reserves include traditional currency, cash equivalents, and other assets.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D8",
+      "description": "The method of valuing the asset must be disclosed, including any models, algorithms, or financial metrics used to determine its worth.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.6
+    },
+    {
+      "requirement_id": "ART_D9",
+      "description": "A clear and comprehensive reserve policy must be in place, detailing how reserves are managed, accessed, and used to support the asset's value.",
+      "fulfilled": true,
+      "evidence": "The reserves are subject to periodic attestation reports by independent auditing firms.",
+      "confidence": 0.8
+    },
+    {
+      "requirement_id": "ART_D10",
+      "description": "The mechanism by which investors can redeem their assets must be disclosed, ensuring that there are clear and efficient procedures for converting the asset into fiat or other tokens.",
+      "fulfilled": true,
+      "evidence": "Token holders can redeem USDT for fiat currency through the Tether platform. The redemption process is available on a daily basis.",
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "ART_D11",
+      "description": "The governance structure of the project must be disclosed, providing details about how decisions are made, how power is distributed, and the roles of key stakeholders.",
+      "fulfilled": false,
+      "evidence": "NOT FOUND",
+      "confidence": 0.6
+    }
+  ]
+}

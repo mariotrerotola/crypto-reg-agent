@@ -1,0 +1,130 @@
+# MiCAR Classification Rules — Table A1 of the paper
+#
+# "MiCAR asset classification rules based on logical triggers"
+#
+# Rules evaluated top-to-bottom; first match wins (priority order).
+# Flag names match AssetFlags schema fields from Listing A5.
+#
+# Conditions operators:
+#   all:  every condition must match (AND)
+#   any:  at least one condition must match (OR)
+#   none: no condition may match (NOR / exclusion)
+
+version: "1.0"
+jurisdiction: "EU-MiCAR"
+description: "Classification rules from Table A1 of the paper."
+
+rules:
+  # --- SECURITY ---
+  # Table A1: regulated_as_security, represents_equity, represents_debt,
+  # has_capital_rights, investment_promise, dividend_like, security_language,
+  # rights_transferable (all = true)
+  - id: "SEC_1"
+    description: "Security token: regulated as security or has equity/debt characteristics"
+    conditions:
+      any:
+        - flag: "regulated_as_security"
+          equals: true
+        - flag: "represents_equity"
+          equals: true
+        - flag: "represents_debt"
+          equals: true
+      all:
+        - flag: "investment_promise"
+          equals: true
+    result: "security"
+
+  - id: "SEC_2"
+    description: "Security token: capital rights with dividend-like returns and security language"
+    conditions:
+      all:
+        - flag: "has_capital_rights"
+          equals: true
+        - flag: "dividend_like"
+          equals: true
+        - flag: "security_language"
+          equals: true
+    result: "security"
+
+  # --- EMT (E-Money Token) ---
+  # Table A1: redeemable_in_fiat=true, backed_by_assets=false,
+  # audited_reserves=true, utility_function=false
+  - id: "EMT_1"
+    description: "E-Money Token: redeemable in fiat, audited reserves, not backed by asset basket"
+    conditions:
+      all:
+        - flag: "redeemable_in_fiat"
+          equals: true
+        - flag: "audited_reserves"
+          equals: true
+      none:
+        - flag: "backed_by_assets"
+          equals: true
+        - flag: "utility_function"
+          equals: true
+    result: "emt"
+
+  - id: "EMT_2"
+    description: "E-Money Token: redeemable in fiat with reserve assets, not asset-backed basket"
+    conditions:
+      all:
+        - flag: "redeemable_in_fiat"
+          equals: true
+        - flag: "reserve_assets_held"
+          equals: true
+        - flag: "redemption_policy_clear"
+          equals: true
+      none:
+        - flag: "backed_by_assets"
+          equals: true
+    result: "emt"
+
+  # --- ART (Asset-Referenced Token) ---
+  # Table A1: backed_by_assets = true
+  - id: "ART_1"
+    description: "Asset-Referenced Token: backed by a basket of assets"
+    conditions:
+      all:
+        - flag: "backed_by_assets"
+          equals: true
+    result: "art"
+
+  # --- OTHER (Utility/Governance) ---
+  # Table A1: utility_function=true, governance_function=true
+  - id: "OTHER_1"
+    description: "Other crypto-asset: utility or governance function"
+    conditions:
+      any:
+        - flag: "utility_function"
+          equals: true
+        - flag: "governance_function"
+          equals: true
+    result: "other"
+
+  # --- NON_MICAR ---
+  # Table A1: nft_unique=true, investment_promise=true, whitepaper_present=false
+  - id: "NON_MICAR_1"
+    description: "Non-MiCAR: unique NFT"
+    conditions:
+      all:
+        - flag: "nft_unique"
+          equals: true
+    result: "non_micar"
+
+  - id: "NON_MICAR_2"
+    description: "Non-MiCAR: investment promise without whitepaper"
+    conditions:
+      all:
+        - flag: "investment_promise"
+          equals: true
+      none:
+        - flag: "whitepaper_present"
+          equals: true
+    result: "non_micar"
+
+  # --- NON_CLASSIFIABLE (fallback) ---
+  # Table A1: No crypto indicators detected
+  - id: "NON_CLASSIFIABLE_FALLBACK"
+    description: "Non-classifiable: no crypto indicators detected"
+    conditions: {}
+    result: "non_classifiable"
