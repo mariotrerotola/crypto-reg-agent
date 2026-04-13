@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     # Rule engine
     rules_dir: Path = Path(__file__).parent / "rules" / "micar_v1"
 
+    # Data acquisition (Searcher + Crawler)
+    coingecko_api_key: str = ""
+    crawler_timeout: float = 30.0
+    crawler_max_urls: int = 5
+
     # Mock mode
     mock_mode: bool = False
     fixtures_dir: Path = Path("fixtures/mock_responses")

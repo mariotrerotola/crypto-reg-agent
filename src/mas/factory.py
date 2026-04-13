@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from mas.agents.crawler import WebCrawler
+from mas.agents.searcher import CoinGeckoSearcher
 from mas.config import Settings
 from mas.graph.builder import build_compliance_graph
 from mas.rules.engine import RuleEngine
@@ -14,11 +16,16 @@ if TYPE_CHECKING:
     from langgraph.graph.state import CompiledStateGraph
 
 
-def create_pipeline(settings: Settings | None = None) -> CompiledStateGraph:
+def create_pipeline(
+    settings: Settings | None = None,
+    enable_search: bool = True,
+) -> CompiledStateGraph:
     """Build a compiled compliance pipeline from settings.
 
-    In mock mode, uses FakeChatModel with pre-computed fixtures.
-    Otherwise, uses ChatOpenAI with structured output.
+    Args:
+        settings: Application settings. Defaults to loading from env.
+        enable_search: If True, include Searcher + Crawler nodes for
+            project discovery. If False, only the 3-node analysis pipeline.
     """
     if settings is None:
         settings = Settings()
@@ -27,13 +34,29 @@ def create_pipeline(settings: Settings | None = None) -> CompiledStateGraph:
 
     if settings.mock_mode:
         chat_model = _create_mock_model(settings.fixtures_dir)
+        searcher = None
+        crawler = None
     else:
         chat_model = _create_openai_model(settings)
+        if enable_search:
+            searcher = CoinGeckoSearcher(
+                api_key=settings.coingecko_api_key or None,
+                timeout=settings.crawler_timeout,
+            )
+            crawler = WebCrawler(
+                timeout=settings.crawler_timeout,
+                max_urls=settings.crawler_max_urls,
+            )
+        else:
+            searcher = None
+            crawler = None
 
     return build_compliance_graph(
         chat_model=chat_model,
         rule_engine=rule_engine,
         prompt_version=settings.prompt_version,
+        searcher=searcher,
+        crawler=crawler,
     )
 
 
@@ -63,7 +86,6 @@ def _create_mock_model(fixtures_dir: Path) -> Any:
 
     responses: dict[type, Any] = {}
 
-    # Look for fixture files
     for example_dir in sorted(fixtures_dir.iterdir()) if fixtures_dir.exists() else []:
         if not example_dir.is_dir():
             continue
@@ -79,7 +101,7 @@ def _create_mock_model(fixtures_dir: Path) -> Any:
             responses[ComplianceFlags] = ComplianceFlags.model_validate(data)
 
     if not responses:
-        msg = f"No mock fixtures found in {fixtures_dir}. Create fixture files first."
+        msg = f"No mock fixtures found in {fixtures_dir}."
         raise FileNotFoundError(msg)
 
     return _FakeChatModel(responses)

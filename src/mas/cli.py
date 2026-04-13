@@ -123,5 +123,49 @@ def batch(  # noqa: B008
     typer.echo(f"Done. {len(files)} files processed.")
 
 
+@app.command()
+def search(  # noqa: B008
+    query: str = typer.Argument(..., help="Project name or symbol (e.g. 'tether', 'UNI')"),
+    output_format: str = typer.Option(
+        "markdown", "--format", "-f", help="Output format: markdown, json"
+    ),
+    output_file: Path | None = typer.Option(None, "--output", "-o", help="Write output to file"),
+) -> None:
+    """Search for a crypto project and analyze it for MiCAR compliance.
+
+    Uses CoinGecko to discover the project, crawls its website, and runs
+    the full 5-stage compliance analysis pipeline.
+    """
+    settings = Settings()
+    pipeline = create_pipeline(settings, enable_search=True)
+
+    typer.echo(f"Searching for: {query}...")
+    state = pipeline.invoke({"project_query": query})
+
+    report = _build_report(state)
+    metadata = state.get("project_metadata")
+    cls = report.classification.micar_class.value.upper()
+    fc = report.fulfilled_count
+    td = report.total_disclosures
+
+    if metadata:
+        typer.echo(f"Project: {metadata.name} ({metadata.symbol})")
+        if metadata.categories:
+            typer.echo(f"Categories: {', '.join(metadata.categories)}")
+    typer.echo(f"Classification: {cls}")
+    typer.echo(f"Compliance Score: {report.compliance_score:.1%} ({fc}/{td})")
+    rules = ", ".join(report.classification.triggered_rules)
+    typer.echo(f"Triggered Rules: {rules}")
+
+    content = to_json(report) if output_format == "json" else to_markdown(report)
+
+    if output_file:
+        output_file.write_text(content)
+        typer.echo(f"Report written to: {output_file}")
+    else:
+        typer.echo("")
+        typer.echo(content)
+
+
 if __name__ == "__main__":
     app()
