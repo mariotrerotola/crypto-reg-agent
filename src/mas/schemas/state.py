@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from typing import TypedDict
 
+from mas.agents.goplus import ContractSecurity
 from mas.schemas.asset_flags import AssetFlags
 from mas.schemas.classification import ClassificationResult
 from mas.schemas.compliance_flags import ComplianceFlags
 from mas.schemas.project import ProjectMetadata
+from mas.schemas.trust_analysis import TrustAnalysisResult
 
 
 class ComplianceState(TypedDict, total=False):
@@ -34,6 +36,12 @@ class ComplianceState(TypedDict, total=False):
 
     # Stage 3 output
     compliance_flags: ComplianceFlags
+
+    # Trust analysis output (parallel branch)
+    trust_analysis: TrustAnalysisResult
+
+    # On-chain contract security (GoPlus)
+    contract_security: ContractSecurity
 
     # Metadata
     prompt_version: str

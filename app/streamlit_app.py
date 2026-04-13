@@ -29,6 +29,8 @@ def _build_report(state: dict) -> ComplianceReport:  # type: ignore[type-arg]
         asset_flags=state["asset_flags"],
         classification=state["classification"],
         compliance_flags=state["compliance_flags"],
+        trust_analysis=state.get("trust_analysis"),
+        contract_security=state.get("contract_security"),
     )
 
 
@@ -181,6 +183,53 @@ def main() -> None:
                 "Evidence": d.evidence[:100],
             })
         st.dataframe(disc_data, use_container_width=True, hide_index=True)
+
+        # Trust Analysis
+        if report.trust_analysis:
+            st.subheader("Trust & Risk Indicators")
+            trust = report.trust_analysis
+            st.info(trust.disclaimer)
+
+            tcol1, tcol2 = st.columns(2)
+            rl = trust.risk_level.value.upper().replace("_", " ")
+            tcol1.metric("Trust Score", f"{trust.overall_score:.0f}%")
+            tcol2.metric("Risk Level", rl)
+
+            trust_data = []
+            for name in type(trust.signals).model_fields:
+                signal = getattr(trust.signals, name)
+                trust_data.append({
+                    "Signal": name.replace("_", " ").title(),
+                    "Score": f"{signal.score}/5",
+                    "Confidence": f"{signal.confidence:.0%}",
+                    "Evidence": signal.evidence[:100],
+                })
+            st.dataframe(trust_data, use_container_width=True, hide_index=True)
+
+        # On-Chain Security (GoPlus)
+        if report.contract_security:
+            st.subheader("On-Chain Security (GoPlus)")
+            sec = report.contract_security
+
+            gcol1, gcol2, gcol3 = st.columns(3)
+            gcol1.metric("Red Flags", sec.red_flag_count)
+            gcol2.metric("Warnings", sec.warning_count)
+            gcol3.metric("Holders", f"{sec.holder_count:,}")
+
+            goplus_data = [
+                {"Check": "Honeypot", "Status": "FAIL" if sec.is_honeypot else "OK"},
+                {"Check": "Open Source", "Status": "OK" if sec.is_open_source else "FAIL"},
+                {"Check": "Proxy", "Status": "FAIL" if sec.is_proxy else "OK"},
+                {"Check": "Mintable", "Status": "FAIL" if sec.is_mintable else "OK"},
+                {"Check": "Hidden Owner", "Status": "FAIL" if sec.hidden_owner else "OK"},
+                {"Check": "Owner Mint", "Status": "FAIL" if sec.owner_change_balance else "OK"},
+                {"Check": "Pausable", "Status": "FAIL" if sec.transfer_pausable else "OK"},
+                {"Check": "Self-Destruct", "Status": "FAIL" if sec.selfdestruct else "OK"},
+            ]
+            if sec.sell_tax > 0 or sec.buy_tax > 0:
+                goplus_data.append({"Check": "Buy Tax", "Status": f"{sec.buy_tax:.1f}%"})
+                goplus_data.append({"Check": "Sell Tax", "Status": f"{sec.sell_tax:.1f}%"})
+            st.dataframe(goplus_data, use_container_width=True, hide_index=True)
 
         # Export
         st.subheader("Export")

@@ -11,6 +11,7 @@ from typing import Any
 
 import httpx
 
+from mas.agents.ratelimit import RateLimiter
 from mas.schemas.project import ProjectMetadata
 from mas.schemas.state import ComplianceState
 
@@ -47,6 +48,7 @@ class CoinGeckoSearcher:
             headers=headers,
             timeout=timeout,
         )
+        self._rate_limiter = RateLimiter(min_interval=1.5)
 
     def search(self, query: str) -> ProjectMetadata:
         """Search for a crypto project by name or symbol.
@@ -116,6 +118,18 @@ class CoinGeckoSearcher:
         description_data: dict[str, str] = data.get("description", {})
         description = description_data.get("en", "")
 
+        # GitHub repos
+        repos_url: dict[str, Any] = links.get("repos_url", {})
+        github_urls: list[str] = [
+            url for url in repos_url.get("github", []) if url
+        ]
+
+        # Contract addresses (chain → address)
+        platforms: dict[str, Any] = data.get("platforms", {})
+        contract_addresses: dict[str, str] = {
+            chain: addr for chain, addr in platforms.items() if addr
+        }
+
         # Categories
         categories: list[str] = [c for c in data.get("categories", []) if c]
 
@@ -129,9 +143,58 @@ class CoinGeckoSearcher:
             website_urls=homepage,
             whitepaper_url=whitepaper_url,
             description=description[:2000] if description else "",
+            github_urls=github_urls,
+            contract_addresses=contract_addresses,
             categories=categories,
             market_cap_rank=market_cap_rank,
         )
+
+    def list_new_coins(self, limit: int = 25) -> list[ProjectMetadata]:
+        """Fetch recently listed coins from CoinGecko (free API).
+
+        Uses ``/coins/markets`` sorted by newest first (``id_desc``),
+        which is available on the free tier.  Then fetches full metadata
+        for each coin to obtain website URLs and descriptions.
+
+        Args:
+            limit: Maximum number of new coins to return.
+
+        Returns:
+            List of ProjectMetadata for recently listed coins.
+
+        Raises:
+            SearcherError: If the API call fails.
+        """
+        try:
+            resp = self._client.get(
+                "/coins/markets",
+                params={
+                    "vs_currency": "usd",
+                    "order": "id_desc",
+                    "per_page": min(limit, 250),
+                    "page": 1,
+                },
+            )
+            resp.raise_for_status()
+            coins: list[dict[str, Any]] = resp.json()
+        except httpx.HTTPError as e:
+            msg = f"CoinGecko new coins listing failed: {e}"
+            raise SearcherError(msg) from e
+
+        results: list[ProjectMetadata] = []
+        for coin in coins[:limit]:
+            coin_id = coin.get("id", "")
+            if not coin_id:
+                continue
+            try:
+                self._rate_limiter.wait()
+                metadata = self._fetch_coin_metadata(coin_id)
+                results.append(metadata)
+                logger.info("Fetched metadata for new coin: %s", metadata.name)
+            except SearcherError:
+                logger.warning("Skipping coin %s: metadata fetch failed", coin_id)
+                continue
+        return results
 
     def close(self) -> None:
         """Close the HTTP client."""

@@ -3,23 +3,39 @@
 Implements the Crawler Agent from Section 3.3 of the paper, which extracts
 textual content from web resources and generates a standardized Markdown
 representation for downstream analysis.
+
+Uses **crawl4ai** as the default extraction engine — it handles both static
+HTML and JavaScript-rendered SPA pages, producing clean Markdown output
+suitable for LLM consumption.  PDF and GitHub README URLs are handled via
+dedicated lightweight methods (no browser needed).
+
+The browser is reused across calls via ``nest_asyncio`` to avoid
+"cannot be called from a running event loop" errors in batch mode.
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 
 import httpx
-import trafilatura
+import nest_asyncio
 
 from mas.schemas.project import ProjectMetadata
 from mas.schemas.state import ComplianceState
+
+# Allow nested event loops (safe for sync-wrapping async crawl4ai)
+nest_asyncio.apply()
 
 logger = logging.getLogger(__name__)
 
 MAX_CHARS_PER_URL = 15000
 MAX_TOTAL_CHARS = 50000
+
+# Common branch names to try for GitHub raw README
+_GITHUB_BRANCHES = ("main", "master")
+_README_NAMES = ("README.md", "README.rst", "README.txt", "README")
 
 
 class CrawlerError(Exception):
@@ -29,10 +45,12 @@ class CrawlerError(Exception):
 class WebCrawler:
     """Crawler Agent: extracts text from project websites.
 
-    Uses trafilatura for main content extraction, with httpx for HTTP
-    fetching. Falls back to raw HTML text extraction if trafilatura
-    returns nothing. PDF URLs are downloaded and extracted via pymupdf
-    if available.
+    Uses crawl4ai for web page extraction (handles static + SPA sites),
+    with dedicated handlers for PDFs (pymupdf) and GitHub READMEs
+    (raw.githubusercontent.com).
+
+    The crawl4ai browser instance is lazily created and reused across
+    multiple ``crawl()`` calls to avoid per-URL browser startup overhead.
 
     Args:
         timeout: HTTP request timeout in seconds.
@@ -58,6 +76,7 @@ class WebCrawler:
             },
         )
         self._max_urls = max_urls
+        self._timeout_ms = int(timeout * 1000)
 
     def crawl(self, urls: list[str]) -> str:
         """Crawl a list of URLs and extract main text content.
@@ -96,9 +115,59 @@ class WebCrawler:
 
     def _extract_url(self, url: str) -> str | None:
         """Fetch and extract main content from a single URL."""
-        # Handle PDF URLs separately
+        # Handle PDF URLs separately (direct download, no browser)
         if url.lower().endswith(".pdf"):
             return self._extract_pdf(url)
+
+        # Handle GitHub repo URLs -> fetch README directly (no browser)
+        if "github.com/" in url and "/raw/" not in url:
+            return self._extract_github_readme(url)
+
+        # Default: crawl4ai for all web pages (static + SPA)
+        return self._extract_with_crawl4ai(url)
+
+    def _extract_with_crawl4ai(self, url: str) -> str | None:
+        """Extract content using crawl4ai (handles static + JS-rendered pages).
+
+        Uses ``nest_asyncio`` to safely call async code from sync context,
+        avoiding "cannot be called from running event loop" errors.
+        """
+        try:
+            from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig
+        except ImportError:
+            logger.warning(
+                "Crawler: crawl4ai not installed, falling back to httpx for %s",
+                url,
+            )
+            return self._extract_static(url)
+
+        async def _crawl() -> str | None:
+            browser_cfg = BrowserConfig(headless=True)
+            run_cfg = CrawlerRunConfig(page_timeout=self._timeout_ms)
+            async with AsyncWebCrawler(config=browser_cfg) as crawler:
+                result = await crawler.arun(url, config=run_cfg)
+                md = result.markdown
+                if md and md.raw_markdown and len(md.raw_markdown) > 100:  # noqa: PLR2004
+                    return md.raw_markdown
+            return None
+
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            text = loop.run_until_complete(_crawl())
+            if text:
+                logger.info("Crawler: crawl4ai extracted %d chars from %s", len(text), url)
+                return text
+        except Exception as e:
+            logger.warning("Crawler: crawl4ai failed for %s: %s", url, e)
+
+        return None
+
+    def _extract_static(self, url: str) -> str | None:
+        """Lightweight fallback: fetch HTML with httpx, extract with trafilatura."""
+        import trafilatura
 
         try:
             resp = self._client.get(url)
@@ -108,18 +177,6 @@ class WebCrawler:
             logger.warning("Crawler: HTTP error for %s: %s", url, e)
             return None
 
-        # Primary: trafilatura
-        text = trafilatura.extract(
-            html,
-            include_comments=False,
-            include_tables=True,
-            output_format="txt",
-            favor_precision=True,
-        )
-        if text and len(text) > 100:
-            return text
-
-        # Fallback: basic HTML text extraction via trafilatura bare mode
         text = trafilatura.extract(
             html,
             include_comments=False,
@@ -127,10 +184,33 @@ class WebCrawler:
             output_format="txt",
             favor_recall=True,
         )
-        if text and len(text) > 100:
+        if text and len(text) > 100:  # noqa: PLR2004
             return text
+        return None
 
-        logger.warning("Crawler: trafilatura returned insufficient content for %s", url)
+    def _extract_github_readme(self, repo_url: str) -> str | None:
+        """Fetch the README from a GitHub repository via raw URL.
+
+        Tries ``main`` and ``master`` branches with common README names.
+        """
+        repo_url = repo_url.rstrip("/")
+        if "github.com/" not in repo_url:
+            return None
+        path = repo_url.split("github.com/", 1)[1]
+        if "/tree/" in path:
+            path = path.split("/tree/")[0]
+
+        for branch in _GITHUB_BRANCHES:
+            for readme in _README_NAMES:
+                raw_url = f"https://raw.githubusercontent.com/{path}/{branch}/{readme}"
+                try:
+                    resp = self._client.get(raw_url)
+                    if resp.status_code == 200 and len(resp.text) > 50:  # noqa: PLR2004
+                        logger.info("Crawler: fetched GitHub README from %s", raw_url)
+                        return resp.text
+                except httpx.HTTPError:
+                    continue
+        logger.warning("Crawler: no README found for %s", repo_url)
         return None
 
     def _extract_pdf(self, url: str) -> str | None:
@@ -184,11 +264,12 @@ def make_crawler_node(crawler: WebCrawler) -> Any:
     def crawl_project(state: ComplianceState) -> dict[str, Any]:
         metadata: ProjectMetadata = state["project_metadata"]
 
-        # Prioritize whitepaper URL, then website URLs
+        # Prioritize whitepaper URL, then website URLs, then GitHub repos
         urls: list[str] = []
         if metadata.whitepaper_url:
             urls.append(metadata.whitepaper_url)
         urls.extend(metadata.website_urls)
+        urls.extend(metadata.github_urls)
 
         logger.info(
             "Crawler: crawling %d URLs for %s (%s)",
@@ -210,7 +291,8 @@ def make_crawler_node(crawler: WebCrawler) -> Any:
         # Prepend project description from registry as context
         if metadata.description and not text.startswith(f"# {metadata.name}"):
             header = (
-                f"# {metadata.name} ({metadata.symbol})\n\n{metadata.description[:2000]}\n\n---\n\n"
+                f"# {metadata.name} ({metadata.symbol})\n\n"
+                f"{metadata.description[:2000]}\n\n---\n\n"
             )
             text = header + text
 

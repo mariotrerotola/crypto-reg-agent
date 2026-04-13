@@ -51,6 +51,10 @@ class RuleEngine:
         determines the classification. An empty conditions block always matches
         (used for fallback rules).
 
+        Supports both MiCAR and non-MiCAR jurisdictions.  For non-MiCAR rule
+        sets, the result string is mapped to the closest ``MiCARClass`` enum
+        value and the original label is stored in ``jurisdiction_class``.
+
         Args:
             flags: Mapping of flag names to boolean values.
 
@@ -58,28 +62,47 @@ class RuleEngine:
             A ClassificationResult with the matched class, rule IDs, and explanation.
         """
         rules: list[dict[str, Any]] = self._classification["rules"]
-        triggered: list[str] = []
-        explanations: list[str] = []
+        jurisdiction = self.jurisdiction
 
         for rule in rules:
             conditions: dict[str, Any] = rule.get("conditions", {})
             if self._evaluate_conditions(conditions, flags):
-                triggered.append(rule["id"])
-                explanations.append(
-                    f"Rule {rule['id']}: {rule.get('description', 'no description')}"
-                )
-                micar_class = MiCARClass(rule["result"])
+                result_str = rule["result"]
+                micar_class = self._to_micar_class(result_str)
                 return ClassificationResult(
                     micar_class=micar_class,
-                    triggered_rules=triggered,
-                    explanation="; ".join(explanations),
+                    triggered_rules=[rule["id"]],
+                    explanation=f"Rule {rule['id']}: {rule.get('description', '')}",
+                    jurisdiction=jurisdiction,
+                    jurisdiction_class=result_str,
                 )
 
         return ClassificationResult(
             micar_class=MiCARClass.OTHER,
             triggered_rules=[],
             explanation="No rules matched; defaulting to OTHER.",
+            jurisdiction=jurisdiction,
+            jurisdiction_class="other",
         )
+
+    @staticmethod
+    def _to_micar_class(result: str) -> MiCARClass:
+        """Map a rule result string to a MiCARClass enum value.
+
+        Exact matches use the enum directly.  Non-MiCAR values are mapped
+        to ``SECURITY`` (for securities-like classes) or ``OTHER``.
+        """
+        try:
+            return MiCARClass(result)
+        except ValueError:
+            # Non-MiCAR jurisdiction: map to closest MiCAR class
+            security_like = {"security", "investment_contract", "note", "equity", "debt"}
+            non_micar_like = {"non_security_nft", "commodity"}
+            if result.lower() in security_like:
+                return MiCARClass.SECURITY
+            if result.lower() in non_micar_like:
+                return MiCARClass.NON_MICAR
+            return MiCARClass.OTHER
 
     def get_disclosure_checklist(self, micar_class: str) -> list[dict[str, str]]:
         """Return the applicable disclosure items for a MiCAR class.

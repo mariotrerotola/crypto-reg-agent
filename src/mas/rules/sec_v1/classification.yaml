@@ -1,0 +1,162 @@
+# SEC Classification Rules — Howey Test & Securities Act of 1933
+#
+# Based on:
+#   - SEC v. W.J. Howey Co., 328 U.S. 293 (1946)
+#   - Securities Act of 1933, Section 2(a)(1)
+#   - SEC FinHub "Framework for Investment Contract Analysis" (April 2019)
+#   - SEC v. Ripple Labs (SDNY, July 2023)
+#   - SEC DAO Report, Release No. 81207 (July 2017)
+#
+# The Howey Test determines whether an asset is an "investment contract":
+#   1. An investment of money (contribution of value)
+#   2. In a common enterprise (pooling of funds)
+#   3. With a reasonable expectation of profits
+#   4. Derived primarily from the efforts of others
+#
+# FinHub Framework additional factors:
+#   - "Sufficiently decentralized" networks may not satisfy prong 4
+#   - Marketing as investment vs. consumable utility
+#   - Immediate functionality at launch vs. promise of future value
+#
+# NOT legally authoritative — demonstrates multi-jurisdiction extensibility.
+#
+# Conditions operators:
+#   all:  every condition must match (AND)
+#   any:  at least one condition must match (OR)
+#   none: no condition may match (NOR / exclusion)
+
+version: "0.2"
+jurisdiction: "US-SEC"
+description: >-
+  Classification rules based on the Howey Test (1946),
+  Securities Act of 1933 § 2(a)(1), and SEC FinHub Framework (2019).
+
+rules:
+  # --- INVESTMENT CONTRACT (Howey Test) ---
+  # All four Howey prongs mapped to asset flags:
+  #   Prong 1 (investment of money): rights_transferable implies tradeable value
+  #   Prong 2 (common enterprise): reserve_assets_held implies pooled funds
+  #   Prong 3 (expectation of profits): investment_promise or dividend_like
+  #   Prong 4 (efforts of others): NOT governance_function (reliance on promoter)
+  #
+  # Per SEC FinHub: if governance_function=true, the network may be
+  # "sufficiently decentralized" and prong 4 weakens.
+  - id: "HOWEY_FULL"
+    description: >-
+      Investment contract under Howey: investment of money (transferable),
+      common enterprise (pooled reserves), expectation of profits
+      (investment promise or dividends), efforts of others (no meaningful
+      governance = reliance on promoter). Per FinHub Framework and
+      SEC DAO Report (2017).
+    conditions:
+      all:
+        - flag: "rights_transferable"
+          equals: true
+        - flag: "investment_promise"
+          equals: true
+      any:
+        - flag: "dividend_like"
+          equals: true
+        - flag: "reserve_assets_held"
+          equals: true
+      none:
+        - flag: "governance_function"
+          equals: true
+    result: "investment_contract"
+
+  # Variant: strong investment language with dividends even without reserves
+  # Mirrors SEC v. Telegram pattern (marketing + profit expectation)
+  - id: "HOWEY_MARKETING"
+    description: >-
+      Investment contract: security language combined with investment
+      promise and dividend-like returns. Mirrors SEC v. Telegram (2020)
+      pattern where marketing emphasized profit potential.
+    conditions:
+      all:
+        - flag: "investment_promise"
+          equals: true
+        - flag: "dividend_like"
+          equals: true
+        - flag: "security_language"
+          equals: true
+    result: "investment_contract"
+
+  # --- TRADITIONAL SECURITY (Securities Act § 2(a)(1)) ---
+  # Stock, note, bond, debenture, evidence of indebtedness
+  - id: "SEC_EQUITY"
+    description: >-
+      Traditional equity security: represents ownership stake or share
+      in profits. Securities Act § 2(a)(1) — "stock" or "equity".
+    conditions:
+      any:
+        - flag: "represents_equity"
+          equals: true
+        - flag: "has_capital_rights"
+          equals: true
+    result: "security"
+
+  - id: "SEC_DEBT"
+    description: >-
+      Debt security: represents financial obligation of the issuer.
+      Securities Act § 2(a)(1) — "note", "bond", "evidence of indebtedness".
+    conditions:
+      all:
+        - flag: "represents_debt"
+          equals: true
+    result: "security"
+
+  - id: "SEC_EXPLICIT"
+    description: >-
+      Explicitly regulated as a security by a regulatory authority.
+    conditions:
+      all:
+        - flag: "regulated_as_security"
+          equals: true
+    result: "security"
+
+  # --- POTENTIAL COMMODITY (CFTC jurisdiction) ---
+  # Per CFTC: Bitcoin and Ethereum are commodities under CEA § 1a(9).
+  # FinHub: tokens with immediate utility, no investment promise,
+  # and/or sufficient decentralization are less likely securities.
+  - id: "COMMODITY_UTILITY"
+    description: >-
+      Likely commodity, not security: utility or governance token with
+      no investment promise or dividend characteristics. Per FinHub
+      Framework, tokens with immediate consumable utility and no
+      marketing as investment are less likely investment contracts.
+      CFTC may assert jurisdiction under CEA § 1a(9).
+    conditions:
+      any:
+        - flag: "utility_function"
+          equals: true
+        - flag: "governance_function"
+          equals: true
+      none:
+        - flag: "investment_promise"
+          equals: true
+        - flag: "dividend_like"
+          equals: true
+        - flag: "security_language"
+          equals: true
+    result: "commodity"
+
+  # --- NFT (generally not a security) ---
+  - id: "NFT_EXEMPT"
+    description: >-
+      Unique non-fungible token. Generally not considered a security
+      unless fractionalized or marketed as investment. SEC has not
+      issued comprehensive NFT guidance as of 2024.
+    conditions:
+      all:
+        - flag: "nft_unique"
+          equals: true
+      none:
+        - flag: "investment_promise"
+          equals: true
+    result: "non_security_nft"
+
+  # --- UNCLASSIFIED (fallback) ---
+  - id: "UNCLASSIFIED_FALLBACK"
+    description: "Insufficient indicators for SEC classification."
+    conditions: {}
+    result: "non_classifiable"

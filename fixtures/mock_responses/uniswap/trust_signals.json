@@ -1,0 +1,42 @@
+{
+  "team_transparency": {
+    "score": 5,
+    "evidence": "Uniswap Labs founded by Hayden Adams, core team publicly identified with verifiable track records. Development activity fully open-source on GitHub.",
+    "confidence": 0.95
+  },
+  "tokenomics_clarity": {
+    "score": 5,
+    "evidence": "UNI token distribution comprehensively documented: 60% community, 21.266% team, 18.044% investors, 0.69% advisors. Four-year vesting schedule clearly specified.",
+    "confidence": 0.95
+  },
+  "audit_status": {
+    "score": 5,
+    "evidence": "Multiple smart contract audits by Trail of Bits, ABDK Consulting, and independent security researchers. Bug bounty program active on Immunefi.",
+    "confidence": 0.95
+  },
+  "roadmap_realism": {
+    "score": 4,
+    "evidence": "Concrete version history (v1, v2, v3) with delivered features including concentrated liquidity. Uniswap v4 hooks architecture documented with specific technical specifications.",
+    "confidence": 0.85
+  },
+  "red_flags_detected": {
+    "score": 5,
+    "evidence": "No red flags detected. No guaranteed returns, no referral schemes, no pressure tactics. Documentation is technically focused without marketing hype.",
+    "confidence": 0.9
+  },
+  "technical_depth": {
+    "score": 5,
+    "evidence": "Detailed AMM mechanics, concentrated liquidity math (x*y=k invariant), fee tier design, and oracle integration documented with mathematical proofs in whitepaper.",
+    "confidence": 0.95
+  },
+  "funding_transparency": {
+    "score": 4,
+    "evidence": "UNI governance treasury allocation described. Community treasury controlled by governance. Uniswap Labs funding sources not fully detailed in docs.",
+    "confidence": 0.8
+  },
+  "community_governance": {
+    "score": 5,
+    "evidence": "Comprehensive DAO governance: on-chain voting via Governor Bravo, proposal lifecycle documented, delegation mechanics, temperature checks via Snapshot.",
+    "confidence": 0.95
+  }
+}

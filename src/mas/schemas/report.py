@@ -6,9 +6,11 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, computed_field
 
+from mas.agents.goplus import ContractSecurity
 from mas.schemas.asset_flags import AssetFlags
 from mas.schemas.classification import ClassificationResult
 from mas.schemas.compliance_flags import ComplianceFlags
+from mas.schemas.trust_analysis import TrustAnalysisResult
 
 
 class ComplianceReport(BaseModel):
@@ -27,6 +29,14 @@ class ComplianceReport(BaseModel):
     asset_flags: AssetFlags
     classification: ClassificationResult
     compliance_flags: ComplianceFlags
+    trust_analysis: TrustAnalysisResult | None = Field(
+        default=None,
+        description="Trust & risk assessment results, if trust analysis was enabled.",
+    )
+    contract_security: ContractSecurity | None = Field(
+        default=None,
+        description="On-chain contract security analysis from GoPlus.",
+    )
 
     @computed_field  # type: ignore[prop-decorator]
     @property

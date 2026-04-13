@@ -1,0 +1,150 @@
+# SEC Disclosure Requirements
+#
+# Based on:
+#   - Securities Act of 1933, Sections 5 and 10
+#   - Regulation S-K (17 CFR Part 229)
+#   - Regulation S-X (17 CFR Part 210)
+#   - Regulation D (17 CFR §§ 230.501–508)
+#   - Regulation A+ (17 CFR Part 230, Subpart D)
+#   - SEC FinHub Framework (April 2019) — digital asset specific factors
+#
+# NOT legally authoritative — demonstrates multi-jurisdiction extensibility.
+
+version: "0.2"
+jurisdiction: "US-SEC"
+
+checklists:
+  # ──────────────────────────────────────────────────
+  # Investment Contract (Howey Test positive)
+  # Full registration under Securities Act § 5, or exemption
+  # ──────────────────────────────────────────────────
+  investment_contract:
+    - id: "registration_or_exemption"
+      article: "Securities Act § 5(a), 5(c)"
+      description: >-
+        The offering must be registered with the SEC via Form S-1 or
+        qualify for an exemption: Reg D (private placement to accredited
+        investors), Reg A+ (up to $75M with SEC qualification), or
+        Reg S (offshore transactions).
+    - id: "prospectus_or_ppm"
+      article: "Securities Act § 10; Reg D Rule 502(b)"
+      description: >-
+        A prospectus (for registered offerings) or private placement
+        memorandum (for Reg D) must be provided to investors with
+        material information about the issuer and the token.
+    - id: "risk_factors"
+      article: "Reg S-K Item 105"
+      description: >-
+        Material risks specific to the issuer, the token, the technology,
+        regulatory environment, and market conditions must be disclosed.
+        For digital assets, this includes smart contract risks, protocol
+        vulnerabilities, and regulatory uncertainty.
+    - id: "financial_statements"
+      article: "Reg S-X; Securities Act § 7"
+      description: >-
+        Audited financial statements of the issuer must be included.
+        For Reg D 506(b) offerings to non-accredited investors,
+        financial statements must be provided per Rule 502(b)(2).
+    - id: "management_disclosure"
+      article: "Reg S-K Item 401, 402"
+      description: >-
+        Directors, executive officers, and significant employees must be
+        identified with backgrounds, experience, and compensation.
+        Per FinHub Framework, the "Active Participants" whose efforts
+        drive token value must be identified.
+    - id: "use_of_proceeds"
+      article: "Reg S-K Item 504"
+      description: >-
+        The intended use of proceeds from the token sale must be
+        described, including allocation to development, operations,
+        marketing, and reserves.
+    - id: "transfer_restrictions"
+      article: "Securities Act § 5; Rule 144"
+      description: >-
+        Restrictions on resale or transfer must be disclosed. Reg D
+        securities are restricted; Rule 144 provides conditions for
+        resale after a holding period.
+    - id: "technology_description"
+      article: "FinHub Framework (2019)"
+      description: >-
+        The underlying technology, protocol design, consensus mechanism,
+        and smart contract architecture must be described. Per FinHub,
+        the functionality and purpose of the digital asset must be clear.
+    - id: "decentralization_status"
+      article: "FinHub Framework (2019); Hinman Speech (June 2018)"
+      description: >-
+        The degree of decentralization of the network must be disclosed.
+        Per FinHub and the Hinman Speech, "sufficiently decentralized"
+        networks may not constitute securities. Factors include
+        governance distribution, development team reliance, and
+        economic control.
+
+  # ──────────────────────────────────────────────────
+  # Traditional Security (equity, debt, explicit)
+  # ──────────────────────────────────────────────────
+  security:
+    - id: "registration_or_exemption"
+      article: "Securities Act § 5(a), 5(c)"
+      description: >-
+        Must be registered with the SEC or qualify for an exemption.
+    - id: "prospectus_disclosure"
+      article: "Securities Act § 10"
+      description: >-
+        Prospectus with material information must be provided.
+    - id: "risk_factors"
+      article: "Reg S-K Item 105"
+      description: >-
+        Material risk factors must be disclosed.
+    - id: "financial_statements"
+      article: "Reg S-X"
+      description: >-
+        Audited financial statements required.
+    - id: "management_disclosure"
+      article: "Reg S-K Item 401"
+      description: >-
+        Management team must be identified with backgrounds.
+
+  # ──────────────────────────────────────────────────
+  # Commodity (CFTC jurisdiction, not SEC-regulated)
+  # No mandatory SEC disclosure, but best practices apply
+  # ──────────────────────────────────────────────────
+  commodity:
+    - id: "whitepaper_available"
+      article: "Best practice"
+      description: >-
+        A technical whitepaper or documentation should be publicly
+        available describing the project and token mechanics.
+    - id: "team_disclosed"
+      article: "Best practice"
+      description: >-
+        Core team members should be publicly identified.
+    - id: "no_investment_marketing"
+      article: "FinHub Framework (2019)"
+      description: >-
+        The token must not be marketed as an investment opportunity.
+        Per FinHub, marketing emphasizing profit potential may convert
+        a commodity into a security.
+
+  # ──────────────────────────────────────────────────
+  # NFT (generally exempt, minimal requirements)
+  # ──────────────────────────────────────────────────
+  non_security_nft:
+    - id: "not_fractionalized"
+      article: "SEC guidance (informal)"
+      description: >-
+        The NFT must not be fractionalized into fungible shares,
+        which could constitute a security offering.
+    - id: "no_profit_promise"
+      article: "Howey Test"
+      description: >-
+        The NFT must not be marketed with expectation of profit
+        derived from the efforts of others.
+
+  # ──────────────────────────────────────────────────
+  # Unclassified
+  # ──────────────────────────────────────────────────
+  non_classifiable:
+    - id: "insufficient_data"
+      article: "N/A"
+      description: >-
+        Insufficient information to determine SEC classification.

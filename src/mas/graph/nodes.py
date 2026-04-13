@@ -15,6 +15,7 @@ from mas.schemas.asset_flags import AssetFlags
 from mas.schemas.classification import ClassificationResult
 from mas.schemas.compliance_flags import ComplianceFlags
 from mas.schemas.state import ComplianceState
+from mas.schemas.trust_analysis import TrustAnalysisResult, TrustSignals
 
 if TYPE_CHECKING:
     from langchain_core.language_models import BaseChatModel
@@ -108,3 +109,44 @@ def make_disclosure_node(
         return {"compliance_flags": compliance_flags}
 
     return verify_disclosure
+
+
+def make_trust_node(
+    chat_model: BaseChatModel,
+    prompt_version: str = "v1",
+) -> Any:
+    """Create the trust analysis node: extract TrustSignals from whitepaper text.
+
+    Runs in parallel with the compliance branch.  Uses structured output
+    for signal extraction, then deterministic scoring and risk classification.
+    """
+    system_prompt = load_prompt("trust_analysis", prompt_version)
+    structured_model = chat_model.with_structured_output(TrustSignals)
+
+    def trust_analysis(state: ComplianceState) -> dict[str, Any]:
+        whitepaper_text = state["whitepaper_text"]
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": whitepaper_text},
+        ]
+        signals: TrustSignals = structured_model.invoke(messages)  # type: ignore[assignment]
+
+        base_score = TrustAnalysisResult.compute_score(signals)
+
+        # Apply on-chain security modifier if available
+        contract_sec = state.get("contract_security")
+        modifier = contract_sec.trust_modifier() if contract_sec else 0.0
+        overall_score = max(0.0, min(100.0, round(base_score + modifier, 2)))
+
+        risk_level = TrustAnalysisResult.classify_risk(overall_score)
+
+        result = TrustAnalysisResult(
+            signals=signals,
+            overall_score=overall_score,
+            contract_modifier=modifier,
+            risk_level=risk_level,
+        )
+        return {"trust_analysis": result}
+
+    return trust_analysis

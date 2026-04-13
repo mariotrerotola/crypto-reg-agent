@@ -7,12 +7,19 @@ import pytest
 from mas.rules.engine import RuleEngine
 
 RULES_DIR = Path(__file__).parent.parent / "src" / "mas" / "rules" / "micar_v1"
+SEC_RULES_DIR = Path(__file__).parent.parent / "src" / "mas" / "rules" / "sec_v1"
 
 
 @pytest.fixture
 def rule_engine() -> RuleEngine:
     """Rule engine loaded with MiCAR v1 rules."""
     return RuleEngine(rules_dir=RULES_DIR)
+
+
+@pytest.fixture
+def sec_engine() -> RuleEngine:
+    """Rule engine loaded with SEC v1 rules."""
+    return RuleEngine(rules_dir=SEC_RULES_DIR)
 
 
 def make_flags(**overrides: bool) -> dict[str, bool]:

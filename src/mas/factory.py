@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from mas.agents.crawler import WebCrawler
+from mas.agents.goplus import GoPlusClient
 from mas.agents.searcher import CoinGeckoSearcher
 from mas.config import Settings
 from mas.graph.builder import build_compliance_graph
@@ -36,6 +37,7 @@ def create_pipeline(
         chat_model = _create_mock_model(settings.fixtures_dir)
         searcher = None
         crawler = None
+        goplus = None
     else:
         chat_model = _create_openai_model(settings)
         if enable_search:
@@ -47,9 +49,11 @@ def create_pipeline(
                 timeout=settings.crawler_timeout,
                 max_urls=settings.crawler_max_urls,
             )
+            goplus = GoPlusClient(timeout=settings.crawler_timeout)
         else:
             searcher = None
             crawler = None
+            goplus = None
 
     return build_compliance_graph(
         chat_model=chat_model,
@@ -57,6 +61,8 @@ def create_pipeline(
         prompt_version=settings.prompt_version,
         searcher=searcher,
         crawler=crawler,
+        goplus=goplus,
+        enable_trust=True,
     )
 
 
@@ -83,6 +89,7 @@ def _create_mock_model(fixtures_dir: Path) -> Any:
     """Create a FakeChatModel using pre-computed fixture files."""
     from mas.schemas.asset_flags import AssetFlags
     from mas.schemas.compliance_flags import ComplianceFlags
+    from mas.schemas.trust_analysis import TrustSignals
 
     responses: dict[type, Any] = {}
 
@@ -91,6 +98,7 @@ def _create_mock_model(fixtures_dir: Path) -> Any:
             continue
         stage1 = example_dir / "stage1_asset_flags.json"
         stage3 = example_dir / "stage3_compliance_flags.json"
+        trust_file = example_dir / "trust_signals.json"
 
         if stage1.exists() and AssetFlags not in responses:
             data = json.loads(stage1.read_text())
@@ -100,9 +108,21 @@ def _create_mock_model(fixtures_dir: Path) -> Any:
             data = json.loads(stage3.read_text())
             responses[ComplianceFlags] = ComplianceFlags.model_validate(data)
 
+        if trust_file.exists() and TrustSignals not in responses:
+            data = json.loads(trust_file.read_text())
+            responses[TrustSignals] = TrustSignals.model_validate(data)
+
     if not responses:
         msg = f"No mock fixtures found in {fixtures_dir}."
         raise FileNotFoundError(msg)
+
+    # Warn if trust fixtures are missing (trust analysis will fail)
+    if TrustSignals not in responses:
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "No trust_signals.json fixtures found — trust analysis will fail in mock mode."
+        )
 
     return _FakeChatModel(responses)
 

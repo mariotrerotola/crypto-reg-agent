@@ -5,6 +5,12 @@ from mas.schemas.classification import ClassificationResult, MiCARClass
 from mas.schemas.compliance_flags import ComplianceFlags, DisclosureFlag
 from mas.schemas.report import ComplianceReport
 from mas.schemas.state import ComplianceState
+from mas.schemas.trust_analysis import (
+    RiskLevel,
+    TrustAnalysisResult,
+    TrustSignal,
+    TrustSignals,
+)
 
 __all__ = [
     "AssetFlag",
@@ -15,4 +21,8 @@ __all__ = [
     "ComplianceState",
     "DisclosureFlag",
     "MiCARClass",
+    "RiskLevel",
+    "TrustAnalysisResult",
+    "TrustSignal",
+    "TrustSignals",
 ]

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 try:
     import typer
@@ -11,11 +10,17 @@ except ImportError:
     print("CLI requires typer. Install with: uv pip install 'mas[cli]'")  # noqa: T201
     sys.exit(1)
 
-from mas.config import Settings
-from mas.factory import create_pipeline
-from mas.ingest.reader import read_document
-from mas.report import to_json, to_markdown
-from mas.schemas.report import ComplianceReport
+import logging
+from pathlib import Path
+from typing import Any
+
+from mas.config import Settings  # noqa: E402
+from mas.factory import create_pipeline  # noqa: E402
+from mas.ingest.reader import read_document  # noqa: E402
+from mas.report import to_json, to_markdown  # noqa: E402
+from mas.schemas.report import ComplianceReport  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(
     name="mas",
@@ -36,6 +41,8 @@ def _build_report(state: dict) -> ComplianceReport:  # type: ignore[type-arg]
         asset_flags=state["asset_flags"],
         classification=state["classification"],
         compliance_flags=state["compliance_flags"],
+        trust_analysis=state.get("trust_analysis"),
+        contract_security=state.get("contract_security"),
     )
 
 
@@ -69,6 +76,11 @@ def analyze(  # noqa: B008
     typer.echo(f"Compliance Score: {score:.1%} ({fc}/{td})")
     rules = ", ".join(report.classification.triggered_rules)
     typer.echo(f"Triggered Rules: {rules}")
+
+    if report.trust_analysis:
+        trust = report.trust_analysis
+        rl = trust.risk_level.value.upper().replace("_", " ")
+        typer.echo(f"Trust Score: {trust.overall_score:.0f}% ({rl})")
 
     content = to_json(report) if output_format == "json" else to_markdown(report)
 
@@ -157,6 +169,11 @@ def search(  # noqa: B008
     rules = ", ".join(report.classification.triggered_rules)
     typer.echo(f"Triggered Rules: {rules}")
 
+    if report.trust_analysis:
+        trust = report.trust_analysis
+        rl = trust.risk_level.value.upper().replace("_", " ")
+        typer.echo(f"Trust Score: {trust.overall_score:.0f}% ({rl})")
+
     content = to_json(report) if output_format == "json" else to_markdown(report)
 
     if output_file:
@@ -165,6 +182,163 @@ def search(  # noqa: B008
     else:
         typer.echo("")
         typer.echo(content)
+
+
+@app.command("scan-new")
+def scan_new(  # noqa: B008
+    limit: int = typer.Option(10, "--limit", "-n", help="Max new tokens to scan"),
+    output_dir: Path = typer.Option(
+        "reports/scan", "--output-dir", "-o", help="Output directory for reports"
+    ),
+    output_format: str = typer.Option(
+        "json", "--format", "-f", help="Output format: markdown, json"
+    ),
+) -> None:
+    """Scan recently launched tokens for compliance and trust risks.
+
+    Fetches newly created DEX pools from GeckoTerminal, runs GoPlus
+    on-chain security checks, crawls websites, and runs the full
+    compliance + trust analysis pipeline on each token.
+    Results are sorted by risk level (highest risk first).
+    """
+    from mas.agents.crawler import WebCrawler
+    from mas.agents.geckoterminal import GeckoTerminalClient, GeckoTerminalError
+    from mas.agents.goplus import GoPlusClient
+
+    settings = Settings()
+
+    typer.echo(f"Fetching up to {limit} recently launched tokens from GeckoTerminal...")
+
+    gt = GeckoTerminalClient(timeout=settings.crawler_timeout)
+    try:
+        new_tokens = gt.list_new_tokens(limit=limit)
+    except GeckoTerminalError as e:
+        typer.echo(f"Failed to fetch new tokens: {e}", err=True)
+        raise typer.Exit(1) from None
+
+    if not new_tokens:
+        typer.echo("No new tokens found.")
+        raise typer.Exit(0)
+
+    typer.echo(f"Found {len(new_tokens)} tokens. Running analysis pipeline...")
+
+    crawler = WebCrawler(timeout=settings.crawler_timeout, max_urls=2)
+    goplus = GoPlusClient(timeout=settings.crawler_timeout)
+    pipeline = create_pipeline(settings, enable_search=False)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    summary: list[dict[str, str]] = []
+
+    for i, meta in enumerate(new_tokens, 1):
+        typer.echo(f"  [{i}/{len(new_tokens)}] {meta.name} ({meta.symbol})...")
+        try:
+            # GoPlus on-chain check
+            goplus_mod = ""
+            contract_sec = None
+            for chain, addr in meta.contract_addresses.items():
+                contract_sec = goplus.check_token(chain, addr)
+                if contract_sec:
+                    mod = contract_sec.trust_modifier()
+                    flags = []
+                    if contract_sec.is_honeypot:
+                        flags.append("HONEYPOT")
+                    if contract_sec.hidden_owner:
+                        flags.append("hidden_owner")
+                    if contract_sec.owner_change_balance:
+                        flags.append("owner_mint")
+                    if not contract_sec.is_open_source:
+                        flags.append("closed_src")
+                    if contract_sec.sell_tax > 0:
+                        flags.append(f"tax={contract_sec.sell_tax:.0f}%")
+                    goplus_mod = f"GoPlus:{mod:+.0f}"
+                    if flags:
+                        goplus_mod += f" [{','.join(flags)}]"
+                    break
+
+            # Crawl website
+            urls = list(meta.website_urls)
+            import contextlib
+
+            text = None
+            if urls:
+                with contextlib.suppress(Exception):
+                    text = crawler.crawl(urls)
+            if not text or len(text) < 50:
+                text = meta.description or f"Project: {meta.name} ({meta.symbol})"
+
+            # Inject contract_security into state for trust modifier
+            input_state: dict[str, Any] = {"whitepaper_text": text}
+            if contract_sec:
+                input_state["contract_security"] = contract_sec
+
+            state = pipeline.invoke(input_state)
+            report = _build_report(state)
+
+            # Save report
+            slug = meta.name.lower().replace(" ", "_")[:30]
+            ext = ".json" if output_format == "json" else ".md"
+            out = output_dir / f"{slug}_report{ext}"
+            content = to_json(report) if output_format == "json" else to_markdown(report)
+            out.write_text(content)
+
+            cls = report.classification.micar_class.value.upper()
+            comp_score = report.compliance_score
+            trust = report.trust_analysis
+            trust_str = f"{trust.overall_score:.0f}%" if trust else "N/A"
+            risk = trust.risk_level.value if trust else "unknown"
+
+            summary.append({
+                "name": meta.name,
+                "symbol": meta.symbol,
+                "class": cls,
+                "compliance": f"{comp_score:.0%}",
+                "trust": trust_str,
+                "risk": risk,
+                "goplus": goplus_mod,
+            })
+
+            line = f"       {cls} | Trust: {trust_str}"
+            if goplus_mod:
+                line += f" | {goplus_mod}"
+            typer.echo(line)
+
+        except Exception as e:
+            import traceback
+
+            typer.echo(f"       ERROR: {e}", err=True)
+            logger.debug("scan-new error for %s:\n%s", meta.name, traceback.format_exc())
+            summary.append({
+                "name": meta.name,
+                "symbol": meta.symbol,
+                "class": "ERROR",
+                "compliance": "-",
+                "trust": "-",
+                "risk": "error",
+                "goplus": "",
+            })
+
+    # Print sorted summary (highest risk first)
+    risk_order = {
+        "high_risk": 0, "elevated": 1, "moderate": 2,
+        "low_risk": 3, "unknown": 4, "error": 5,
+    }
+    summary.sort(key=lambda x: risk_order.get(x["risk"], 99))
+
+    typer.echo("")
+    typer.echo(f"=== Scan Summary ({len(summary)} tokens) ===")
+    typer.echo("")
+    for s in summary:
+        rl = s["risk"].upper().replace("_", " ")
+        gp = f"  {s['goplus']}" if s.get("goplus") else ""
+        typer.echo(
+            f"  {rl:12s} {s['name']:30s} ({s['symbol']:6s}) "
+            f"Trust: {s['trust']:>4s}  Class: {s['class']}{gp}"
+        )
+
+    typer.echo("")
+    typer.echo(f"Reports saved to: {output_dir}/")
+    gt.close()
+    goplus.close()
 
 
 if __name__ == "__main__":

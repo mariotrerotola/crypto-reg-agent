@@ -1,0 +1,42 @@
+{
+  "team_transparency": {
+    "score": 3,
+    "evidence": "Tether Limited leadership partially disclosed; CEO Paolo Ardoino is publicly identified, but full organizational structure is not detailed in whitepaper.",
+    "confidence": 0.8
+  },
+  "tokenomics_clarity": {
+    "score": 4,
+    "evidence": "USDT maintains a 1:1 USD peg with clearly described issuance and redemption mechanics. Total supply is transparent and verifiable on-chain.",
+    "confidence": 0.9
+  },
+  "audit_status": {
+    "score": 3,
+    "evidence": "Periodic attestation reports published by BDO Italia, though these are attestations rather than full financial audits.",
+    "confidence": 0.85
+  },
+  "roadmap_realism": {
+    "score": 3,
+    "evidence": "Focus on maintaining stablecoin peg stability and multi-chain expansion. Roadmap is operationally focused rather than feature-driven.",
+    "confidence": 0.7
+  },
+  "red_flags_detected": {
+    "score": 4,
+    "evidence": "No guaranteed returns or Ponzi-like language detected. No unrealistic yield promises. However, historical controversies around reserve composition noted.",
+    "confidence": 0.85
+  },
+  "technical_depth": {
+    "score": 3,
+    "evidence": "Multi-chain deployment across Ethereum, Tron, Solana described at high level. Technical details on reserve management are limited.",
+    "confidence": 0.75
+  },
+  "funding_transparency": {
+    "score": 3,
+    "evidence": "Reserve composition partially disclosed through attestation reports. Breakdown between cash, T-bills, and other assets provided quarterly.",
+    "confidence": 0.7
+  },
+  "community_governance": {
+    "score": 2,
+    "evidence": "Centralized management structure under Tether Limited. No DAO, governance token, or community voting mechanisms described.",
+    "confidence": 0.85
+  }
+}

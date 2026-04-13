@@ -27,6 +27,14 @@ class ProjectMetadata(BaseModel):
         default="",
         description="Short project description from the registry.",
     )
+    github_urls: list[str] = Field(
+        default_factory=list,
+        description="GitHub repository URLs from CoinGecko.",
+    )
+    contract_addresses: dict[str, str] = Field(
+        default_factory=dict,
+        description="Chain → contract address mapping (e.g. {'ethereum': '0x...'}).",
+    )
     categories: list[str] = Field(
         default_factory=list,
         description="CoinGecko categories (e.g. 'Stablecoins', 'DeFi').",
